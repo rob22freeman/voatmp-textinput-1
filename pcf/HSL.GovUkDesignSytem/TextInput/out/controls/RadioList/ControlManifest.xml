@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<manifest>
+  <control namespace="HSL.GovUkDesignSystem" constructor="RadioList" version="0.0.1" display-name-key="HSL GUDS Radio" description-key="Hitachi Solutions PCF implementation of GOV.UK Design System Date component." control-type="standard" api-version="1.3.1">
+    <property name="itemValue" display-name-key="itemValue" description-key="Items" of-type="MultiSelectOptionSet" usage="bound" required="true"/>
+    <property name="heading" display-name-key="Heading" description-key="What is the date you intend to capture?" of-type="SingleLine.Text" usage="input" required="true"/>
+    <property name="fieldIdentifierErrorMessage" display-name-key="Field Error Message" description-key="Provide error message specific text (eg [whatever it is]), for example: ‘Enter [whatever it is]’: ‘Enter your date of birth’" of-type="SingleLine.Text" usage="input" required="true"/>
+    <property name="hint" display-name-key="Hint" description-key="Make sure that any example dates you use in hint text are valid for the question being asked" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="uniqueIdentifier" display-name-key="Unique Identifier" description-key="Unique idenfier for this fields control on form. Unless same field is present more than once on the form, use the field logical name. Only use lowercase letters and underscores." of-type="SingleLine.Text" usage="input" required="true"/>
+    <resources>
+      <code path="bundle.js" order="1"/>
+      <css path="govuk-frontend-3.13.0.min.css" order="1"/>
+    </resources>
+    <built-by name="pac" version="1.7.4"/>
+  </control>
+</manifest>
