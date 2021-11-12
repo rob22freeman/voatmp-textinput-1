@@ -5,7 +5,7 @@
 	import { parse } from "path";
 	import { Context } from "vm";
 
-	export class RadioList implements ComponentFramework.StandardControl<IInputs, IOutputs> {
+	export class TextInput implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 	
 		// Reference to the control container HTMLDivElement
 		// This element contains all elements of our custom control example
@@ -367,7 +367,7 @@
 			// no-op: method not leveraged by this example custom control
 		}
 
-		private registerPCFComponent(currentInstance:RadioList) : void {
+		private registerPCFComponent(currentInstance:TextInput) : void {
 			
 			let globalScope = (window as any);
 			
