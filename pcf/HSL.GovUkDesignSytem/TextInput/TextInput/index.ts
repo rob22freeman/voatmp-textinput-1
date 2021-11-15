@@ -94,7 +94,7 @@
 
 			// The Portal automatically generates a container for the PCF which is the field logical name suffixed with "_Container"
 			this._containerLabel = this._uniqueIdentifier + "_Container";
-
+/*
 			const optionArray: any = [];
 			(context.parameters.itemValue as ComponentFramework.PropertyTypes.MultiSelectOptionSetProperty).attributes?.Options.forEach(option =>
 				{
@@ -113,28 +113,21 @@
 				}
 			};
 			eachOption();
-
+*/
 			//Configure and render Nunjucks templates
 			var runOnServer = "http://127.0.0.1:8080/";
 			require('govuk-frontend');
 			var templatePath = "node_modules/govuk-frontend/govuk/components/";
 			var env = Nunjucks.configure(runOnServer + templatePath);
-			var renderedNunjucksTemplate = env.render('/radios/template.njk',{params:{
-				idPrefix: this._uniqueIdentifier,
-				name: this._uniqueIdentifier,
-				fieldset: {
-				  legend: {
-					text: this._heading,
-					isPageHeading: true,
-					classes: "govuk-fieldset__legend--l"
-				  }
-				},
-				hint: {
-				  text: this._hint
-				},
-				items: 
-					radios	
-			  }});
+			var renderedNunjucksTemplate = env.render('/input/template.njk',{params:{
+				label: {
+					text: "What is the name of the event?",
+					classes: "govuk-label--l",
+					isPageHeading: true
+				  },
+				  id: "event-name",
+				  name: "event-name"
+				} });
 			
 			this._container = document.createElement("div");
 			this._container.innerHTML =
@@ -150,14 +143,14 @@
 			this._fieldSet = document.getElementsByClassName("govuk-fieldset")[0] as HTMLFieldSetElement;
 			this._hintDiv = document.getElementById(this._hintId) as HTMLDivElement;
 			this._radiosDiv = document.getElementsByClassName("govuk-radios")[0] as HTMLDivElement;
-
+/*
 			this._radioOptionList = document.getElementsByClassName("govuk-radios__input") as HTMLCollectionOf<HTMLDivElement>;
 			let radioLength = this._radioOptionList.length;
 			for (let i = 0; i < radioLength; i++) {
 				this._radioItem = document.getElementsByClassName("govuk-radios__input")[i] as HTMLOptionElement
 				this._radioItem.addEventListener("change", this._refreshData);
 			};
-
+*/
 			this._enableValidation = false;
 
 			this.removeHintDiv();
