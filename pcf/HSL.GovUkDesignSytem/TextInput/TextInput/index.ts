@@ -84,7 +84,7 @@
 			this._hint = context.parameters.hint.raw as string;
 			
 			// Store the values currently selected
-			this._selectedOptions = context.parameters.itemValue.raw || [];
+		//	this._selectedOptions = context.parameters.textInput.raw || [];
 
 			// The unique identifier should be configured to the field logical name
 			this._uniqueIdentifier = context.parameters.uniqueIdentifier.raw as string; // Required so should never be null
@@ -348,7 +348,7 @@
 		public getOutputs(): IOutputs {
 
 			// Send the currently selected options back to the ComponentFramework
-			return { itemValue: this._selectedOptions };
+			return {};
 		}
 	
 		/** 

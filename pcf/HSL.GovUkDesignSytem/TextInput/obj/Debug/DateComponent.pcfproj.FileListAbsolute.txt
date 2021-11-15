@@ -8,3 +8,5 @@ C:\Users\rfreeman\source\repos\HMRC\voatmp-latest\pcf\HSL.GovUkDesignSytem\DateC
 C:\Users\rfreeman\source\repos\HMRC\voatmp-latest\pcf\HSL.GovUkDesignSytem\DateComponent\obj\Debug\DateComponent.pcfproj.CoreCompileInputs.cache
 C:\Users\rfreeman\source\repos\HMRC\voatmp-radio\pcf\HSL.GovUkDesignSytem\RadioList\obj\Debug\DateComponent.pcfproj.AssemblyReference.cache
 C:\Users\rfreeman\source\repos\HMRC\voatmp-radio\pcf\HSL.GovUkDesignSytem\RadioList\obj\Debug\DateComponent.pcfproj.CoreCompileInputs.cache
+C:\Users\rfreeman\source\repos\voatmp-textinput-1\pcf\HSL.GovUkDesignSytem\TextInput\obj\Debug\DateComponent.pcfproj.AssemblyReference.cache
+C:\Users\rfreeman\source\repos\voatmp-textinput-1\pcf\HSL.GovUkDesignSytem\TextInput\obj\Debug\DateComponent.pcfproj.CoreCompileInputs.cache
