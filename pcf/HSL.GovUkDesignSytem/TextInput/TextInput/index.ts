@@ -26,6 +26,19 @@
 		// Event Handler 'refreshData' reference
 		private _refreshData: EventListenerOrEventListenerObject;
 		
+
+		// Configuration options
+		private _fixedAndFluidWidthInputsClass: string;
+		private _characterWidth2: boolean;
+		private _characterWidth3: boolean;
+		private _characterWidth4: boolean;
+		private _characterWidth5: boolean;
+		private _characterWidth10: boolean;
+		private _characterWidth20: boolean;
+
+
+
+
 		// Elements needed for setting up error messages 
 		private _formGroupDiv: HTMLDivElement;
 
@@ -117,6 +130,11 @@
 			};
 			eachOption();
 */
+
+
+			this.fixedAndFluidWidthInputs();
+			
+
 			//Configure and render Nunjucks templates
 			var runOnServer = "http://127.0.0.1:8080/";
 			require('govuk-frontend');
@@ -128,6 +146,7 @@
 					classes: "govuk-label--l",
 					isPageHeading: true
 				  },
+				  classes: this._fixedAndFluidWidthInputsClass,
 				  id: this._uniqueIdentifier,
 				  name: this._uniqueIdentifier
 				} });
@@ -170,6 +189,52 @@
 			}
 		}
 */
+
+		private fixedAndFluidWidthInputs () {
+
+			this._characterWidth2 = this._context.parameters.fixedAndFluidWidthInputs.raw == "1";
+			this._characterWidth3 = this._context.parameters.fixedAndFluidWidthInputs.raw == "2";
+			this._characterWidth4 = this._context.parameters.fixedAndFluidWidthInputs.raw == "3";
+			this._characterWidth5 = this._context.parameters.fixedAndFluidWidthInputs.raw == "4";
+			this._characterWidth10 = this._context.parameters.fixedAndFluidWidthInputs.raw == "5";
+			this._characterWidth20 = this._context.parameters.fixedAndFluidWidthInputs.raw == "6";
+
+			// 2 character width
+			if (this._characterWidth2) {
+				this._fixedAndFluidWidthInputsClass = "govuk-input--width-2";
+			} 
+
+			// 3 character width
+			else if (this._characterWidth3) {
+				this._fixedAndFluidWidthInputsClass = "govuk-input--width-3";
+			}
+
+			// 4 character width
+			else if (this._characterWidth4) {
+				this._fixedAndFluidWidthInputsClass = "govuk-input--width-4";
+			}
+
+			// 5 character width
+			else if (this._characterWidth5) {
+				this._fixedAndFluidWidthInputsClass = "govuk-input--width-5";
+			}
+
+			// 10 character width
+			else if (this._characterWidth10) {
+				this._fixedAndFluidWidthInputsClass = "govuk-input--width-10";
+			}
+
+			// 20 character width
+			else if (this._characterWidth20) {
+				this._fixedAndFluidWidthInputsClass = "govuk-input--width-20";
+			}
+		};
+
+
+
+
+
+
 /*		public enableValidation() {
 
 			let validationEnabled = this._enableValidation = true;
