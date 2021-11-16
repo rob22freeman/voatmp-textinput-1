@@ -50,9 +50,9 @@
     </property>
 
     <!-- Prefix -->
-    <property name="prefix" display-name-key="Prefix" description-key="Enter the prefix required, for example the '£' symbol." of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="prefix" display-name-key="Prefix" description-key="Enter the prefix required." of-type="SingleLine.Text" usage="input" required="false"/>
     <!-- Suffix -->
-    <property name="suffix" display-name-key="Suffix" description-key="Enter the suffix required, for example 'kg'." of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="suffix" display-name-key="Suffix" description-key="Enter the suffix required." of-type="SingleLine.Text" usage="input" required="false"/>
 
     <!-- Autocomplete -->
     <property name="toggleAutocomplete" display-name-key="Toggle autocomplete" description-key="Use the autocomplete attribute on text inputs to help users complete forms more quickly." of-type="Enum" usage="input" required="false">

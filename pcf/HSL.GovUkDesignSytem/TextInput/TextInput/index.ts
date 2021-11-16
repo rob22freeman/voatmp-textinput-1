@@ -7,6 +7,9 @@
 
 	export class TextInput implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 	
+		// Value of the column is stored and used inside the component
+		private _value: string | null;
+
 		// Reference to the control container HTMLDivElement
 		// This element contains all elements of our custom control example
 		private _container: HTMLDivElement;
@@ -18,7 +21,7 @@
 		private _notifyOutputChanged: () => void;
 		
 		// Internal structure used to store the values of the currently selected options
-		private _selectedOptions: number[];
+//		private _selectedOptions: number[];
 
 		// Event Handler 'refreshData' reference
 		private _refreshData: EventListenerOrEventListenerObject;
@@ -78,7 +81,7 @@
 			// Add control initialization code
 			this._context = context;
 			this._notifyOutputChanged = notifyOutputChanged;
-			this._refreshData = this.refreshData.bind(this);
+//			this._refreshData = this.refreshData.bind(this);
 	
 			this._heading = context.parameters.heading.raw as string;
 			this._hint = context.parameters.hint.raw as string;
@@ -121,12 +124,12 @@
 			var env = Nunjucks.configure(runOnServer + templatePath);
 			var renderedNunjucksTemplate = env.render('/input/template.njk',{params:{
 				label: {
-					text: "What is the name of the event?",
+					text: this._heading,
 					classes: "govuk-label--l",
 					isPageHeading: true
 				  },
-				  id: "event-name",
-				  name: "event-name"
+				  id: this._uniqueIdentifier,
+				  name: this._uniqueIdentifier
 				} });
 			
 			this._container = document.createElement("div");
@@ -139,10 +142,10 @@
 			// Add the entire container to the control's main container
 			container.appendChild(this._container);
 			
-			this._formGroupDiv = document.getElementsByClassName("govuk-form-group")[0] as HTMLDivElement;
-			this._fieldSet = document.getElementsByClassName("govuk-fieldset")[0] as HTMLFieldSetElement;
+	//		this._formGroupDiv = document.getElementsByClassName("govuk-form-group")[0] as HTMLDivElement;
+	//		this._fieldSet = document.getElementsByClassName("govuk-fieldset")[0] as HTMLFieldSetElement;
 			this._hintDiv = document.getElementById(this._hintId) as HTMLDivElement;
-			this._radiosDiv = document.getElementsByClassName("govuk-radios")[0] as HTMLDivElement;
+	//		this._radiosDiv = document.getElementsByClassName("govuk-radios")[0] as HTMLDivElement;
 /*
 			this._radioOptionList = document.getElementsByClassName("govuk-radios__input") as HTMLCollectionOf<HTMLDivElement>;
 			let radioLength = this._radioOptionList.length;
@@ -153,7 +156,7 @@
 */
 			this._enableValidation = false;
 
-			this.removeHintDiv();
+//			this.removeHintDiv();
 			this.registerPCFComponent(this);
 			this.pageValidation();
 		}
@@ -161,13 +164,13 @@
 		/**
 		 * Remove hint div from control if no hint text is required.
 		 */
-		public removeHintDiv() {
+/*		public removeHintDiv() {
 			if (this._hint === undefined) {
 				this._hintDiv.remove();
 			}
 		}
-
-		public enableValidation() {
+*/
+/*		public enableValidation() {
 
 			let validationEnabled = this._enableValidation = true;
 			let doValidation = this._selectedOptions.length === 0 && validationEnabled;
@@ -176,7 +179,7 @@
 				this.performInputValidation();
 			};
 		}
-
+*/
 		/**
 		 * Show error on control.
 		 * @param errorMessageText Error message to display
@@ -254,7 +257,7 @@
 		 * Updates the values to the internal value variable we are storing and also updates the html label that displays the value
 		 * @param context : The "Input Properties" containing the parameters, component metadata and interface functions
 		 */
-		public refreshData(evt: Event): void {
+/*		public refreshData(evt: Event): void {
 			
 			const value = Number(this._radioItem.getAttribute("value"))
 			this._selectedOptions.push(value);
@@ -262,7 +265,7 @@
 			this.HideError();
 			this._notifyOutputChanged();			
 		}
-
+*/
 		/**
 		 * Validates contents of input fields and updates UI with appropriate error messages.
 		 * @returns {boolean} True if validation passed. Otherwise, false.
@@ -276,9 +279,9 @@
 			// Reset error state
 			this.HideError();
 
-			if (this._enableValidation === true) {
-				isInputValid &&= this.handleIfNothingIsSelected(fieldIdentifier);
-			};
+			//if (this._enableValidation === true) {
+			//	isInputValid &&= this.handleIfNothingIsSelected(fieldIdentifier);
+			//};
 
 			return isInputValid;
 		}
@@ -315,7 +318,7 @@
 		 * @returns {boolean} Returns true if nothing is selected. Otherwise false;
 		 * @private
 		 */
-		private handleIfNothingIsSelected (fieldIdentifier: string) : boolean {
+/*		private handleIfNothingIsSelected (fieldIdentifier: string) : boolean {
 			
 			let isOptionSelected = this._selectedOptions.length === 0;
 
@@ -326,19 +329,20 @@
 
 			return !isOptionSelected;
 		}
-
+*/
 		/**
 		 * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
 		 * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions
 		 */
 		public updateView(context: ComponentFramework.Context<IInputs>): void {	
 			
-			// Storing the latest context from the control
-			this._context = context;
-			
-			if (this._selectedOptions.length === 0) {
+		// storing the latest context from the control.
+		this._value = context.parameters.textInput.raw;
+	  	this._context = context;
+		/*	
+			if () {
 			this._enableValidation = true;
-			};
+			};*/
 		}
 	
 		/** 
@@ -348,7 +352,9 @@
 		public getOutputs(): IOutputs {
 
 			// Send the currently selected options back to the ComponentFramework
-			return {};
+			return {
+				textInput: (this._value === null ? undefined : this._value)
+			};
 		}
 	
 		/** 
