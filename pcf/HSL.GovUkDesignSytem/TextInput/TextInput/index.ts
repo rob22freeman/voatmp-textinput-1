@@ -151,6 +151,9 @@
 					classes: "govuk-label--l",
 					isPageHeading: true
 				  },
+				  hint: {
+					text: this._hint
+				  },
 				  classes: this._fixedAndFluidWidthInputsClass,
 				  id: this._uniqueIdentifier,
 				  name: this._uniqueIdentifier
@@ -180,7 +183,7 @@
 */
 			this._enableValidation = false;
 
-//			this.removeHintDiv();
+			this.removeHintDiv();
 			this.registerPCFComponent(this);
 			this.pageValidation();
 		}
@@ -188,12 +191,12 @@
 		/**
 		 * Remove hint div from control if no hint text is required.
 		 */
-/*		public removeHintDiv() {
+		public removeHintDiv() {
 			if (this._hint === undefined) {
 				this._hintDiv.remove();
 			}
 		}
-*/
+
 
 		private fixedAndFluidWidthInputs () {
 
