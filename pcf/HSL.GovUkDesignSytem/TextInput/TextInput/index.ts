@@ -47,7 +47,7 @@
 		private _wholeNumberConfig: any [];
 
 		// Configuration options for spellcheck (on or off)
-		private _spellcheck: string;
+		private _spellcheck: boolean;
 		private _disableSpellcheck: boolean;
 
 
@@ -320,9 +320,9 @@
 			this._disableSpellcheck = this._context.parameters.disableSpellcheck.raw == "1";
 
 			if (this._disableSpellcheck) {
-				return "false";
+				return false;
 			} else {
-				return "true";
+				return true;
 			}
 		};
 
