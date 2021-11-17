@@ -9,13 +9,13 @@ export interface IInputs {
     fieldIdentifierErrorMessage: ComponentFramework.PropertyTypes.StringProperty;
     hint: ComponentFramework.PropertyTypes.StringProperty;
     uniqueIdentifier: ComponentFramework.PropertyTypes.StringProperty;
-    inputType: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
+    inputType: ComponentFramework.PropertyTypes.EnumProperty<"1">;
     fixedAndFluidWidthInputs: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12">;
     prefixesAndSuffixes: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2" | "3">;
     prefix: ComponentFramework.PropertyTypes.StringProperty;
     suffix: ComponentFramework.PropertyTypes.StringProperty;
     toggleAutocomplete: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
-    toggleSpellcheck: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
+    disableSpellcheck: ComponentFramework.PropertyTypes.EnumProperty<"1">;
 }
 export interface IOutputs {
     textInput?: string;

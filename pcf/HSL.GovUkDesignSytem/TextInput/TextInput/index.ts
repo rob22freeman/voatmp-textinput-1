@@ -317,7 +317,7 @@
 		 */
 		private disableSpellcheck () {
 
-			this._disableSpellcheck = this._context.parameters.toggleSpellcheck.raw == "1";
+			this._disableSpellcheck = this._context.parameters.disableSpellcheck.raw == "1";
 
 			if (this._disableSpellcheck) {
 				return "false";
