@@ -35,7 +35,12 @@
 		private _characterWidth5: boolean;
 		private _characterWidth10: boolean;
 		private _characterWidth20: boolean;
-
+		private _fullWidth: boolean;
+		private _threeQuartersWidth: boolean;
+		private _twoThirdsWidth: boolean;
+		private _oneHalfWidth: boolean;
+		private _oneThirdWidth: boolean;
+		private _oneQuarterWidth: boolean;
 
 
 
@@ -192,12 +197,19 @@
 
 		private fixedAndFluidWidthInputs () {
 
+			// selected options for Control Manifest: "Fixed and fluid width inputs"
 			this._characterWidth2 = this._context.parameters.fixedAndFluidWidthInputs.raw == "1";
 			this._characterWidth3 = this._context.parameters.fixedAndFluidWidthInputs.raw == "2";
 			this._characterWidth4 = this._context.parameters.fixedAndFluidWidthInputs.raw == "3";
 			this._characterWidth5 = this._context.parameters.fixedAndFluidWidthInputs.raw == "4";
 			this._characterWidth10 = this._context.parameters.fixedAndFluidWidthInputs.raw == "5";
 			this._characterWidth20 = this._context.parameters.fixedAndFluidWidthInputs.raw == "6";
+			this._fullWidth = this._context.parameters.fixedAndFluidWidthInputs.raw == "7";
+			this._threeQuartersWidth = this._context.parameters.fixedAndFluidWidthInputs.raw == "8";
+			this._twoThirdsWidth = this._context.parameters.fixedAndFluidWidthInputs.raw == "9";
+			this._oneHalfWidth = this._context.parameters.fixedAndFluidWidthInputs.raw == "10";
+			this._oneThirdWidth = this._context.parameters.fixedAndFluidWidthInputs.raw == "11";
+			this._oneQuarterWidth = this._context.parameters.fixedAndFluidWidthInputs.raw == "12";
 
 			// 2 character width
 			if (this._characterWidth2) {
@@ -227,6 +239,42 @@
 			// 20 character width
 			else if (this._characterWidth20) {
 				this._fixedAndFluidWidthInputsClass = "govuk-input--width-20";
+			}
+
+			// full width
+			else if (this._fullWidth) {
+				this._fixedAndFluidWidthInputsClass = "govuk-!-width-full";
+			}
+
+			// three quarters width
+			else if (this._threeQuartersWidth) {
+				this._fixedAndFluidWidthInputsClass = "govuk-!-width-three-quarters";
+			}
+
+			// two thirds width
+			else if (this._twoThirdsWidth) {
+				this._fixedAndFluidWidthInputsClass = "govuk-!-width-two-thirds";
+			}
+
+			// one half width
+			else if (this._oneHalfWidth) {
+				this._fixedAndFluidWidthInputsClass = "govuk-!-width-one-half";
+			}
+
+			// one third width
+			else if (this._oneThirdWidth) {
+				this._fixedAndFluidWidthInputsClass = "govuk-!-width-one-third";
+			}
+
+			// one quarter width
+			else if (this._oneQuarterWidth) {
+				this._fixedAndFluidWidthInputsClass = "govuk-!-width-one-quarter";
+			}
+			
+			// default full width: "By default, the width of text inputs is fluid and will fit the full width 
+			// of the container they are placed into." https://design-system.service.gov.uk/components/text-input/
+			else {
+				this._fixedAndFluidWidthInputsClass = "govuk-!-width-full";
 			}
 		};
 
