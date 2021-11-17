@@ -151,10 +151,10 @@
 					classes: "govuk-label--l",
 					isPageHeading: true
 				  },
+				  classes: this._fixedAndFluidWidthInputsClass,
 				  hint: {
 					text: this._hint
 				  },
-				  classes: this._fixedAndFluidWidthInputsClass,
 				  id: this._uniqueIdentifier,
 				  name: this._uniqueIdentifier
 				} });
@@ -197,7 +197,12 @@
 			}
 		}
 
-
+		/**
+		 * Configure the size of the text input box based on the selected option for "Fixed and fluid width inputs".
+		 * If no option is selected, the default configuration is "full width", as dictated by the GOVUK Design System:
+		 * "By default, the width of text inputs is fluid and will fit the full width of the container they are placed into." 
+		 * https://design-system.service.gov.uk/components/text-input/
+		 */
 		private fixedAndFluidWidthInputs () {
 
 			// selected options for Control Manifest: "Fixed and fluid width inputs"
