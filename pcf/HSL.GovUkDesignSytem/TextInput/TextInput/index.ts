@@ -27,7 +27,7 @@
 		private _refreshData: EventListenerOrEventListenerObject;
 		
 
-		// Configuration options
+		// Configuration options for width of input box
 		private _fixedAndFluidWidthInputsClass: string;
 		private _characterWidth2: boolean;
 		private _characterWidth3: boolean;
@@ -42,6 +42,14 @@
 		private _oneThirdWidth: boolean;
 		private _oneQuarterWidth: boolean;
 
+		// Configuration option for input type
+		private _wholeNumber: boolean;
+		private _wholeNumberConfig: any [];
+
+		// Configuration options for spellcheck (on or off)
+		private _spellcheck: string;
+		private _spellcheckOn: boolean;
+		private _spellcheckOff: boolean;
 
 
 		// Elements needed for setting up error messages 
@@ -138,7 +146,7 @@
 
 
 			this.fixedAndFluidWidthInputs();
-			
+			this.inputType();
 
 			//Configure and render Nunjucks templates
 			var runOnServer = "http://127.0.0.1:8080/";
@@ -156,7 +164,9 @@
 					text: this._hint
 				  },
 				  id: this._uniqueIdentifier,
-				  name: this._uniqueIdentifier
+				  name: this._uniqueIdentifier,
+//				  this._wholeNumberConfig
+				  spellcheck: this._spellcheck
 				} });
 			
 			this._container = document.createElement("div");
@@ -286,7 +296,33 @@
 			}
 		};
 
+		private inputType () {
 
+			// selected option for Control Manifest: "Input Type"
+			this._wholeNumber = this._context.parameters.inputType.raw == "1";
+			this._wholeNumberConfig = [];
+
+			if (this._wholeNumber) {
+			let config = {inputmode: "numeric", pattern: "[0-9]*"};
+			this._wholeNumberConfig.push(config);
+			}
+		};
+
+		private toggleSpellcheck () {
+
+			// Spellcheck on
+			this._spellcheckOn = this._context.parameters.toggleSpellcheck.raw == "1";
+			// Spellcheck off
+			this._spellcheckOff = this._context.parameters.toggleSpellcheck.raw == "2";
+
+			if (this._spellcheckOn) {
+				this._spellcheck = "true";
+			}
+
+			if (this._spellcheckOff) {
+				this._spellcheck = "false";
+			}
+		};
 
 
 

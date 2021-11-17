@@ -21,9 +21,8 @@
     <property name="uniqueIdentifier" display-name-key="Unique Identifier" description-key="Unique idenfier for this fields control on form. Unless same field is present more than once on the form, use the field logical name. Only use lowercase letters and underscores." of-type="SingleLine.Text" usage="input" required="true" />
 
     <!-- Input type -->   
-    <property name="inputType" display-name-key="Input Type" description-key="Choose input type based on the information required, for example, if you’re asking the user to enter a whole number and you want to bring up the numeric keypad on a mobile device. If you’re asking the user to enter a number that might include decimal places, use text or decimal input." of-type="Enum" usage="input" required="false">
-      <value name="textOrDecimal" display-name-key="Text or decimal" description-key="Text or decimal">1</value>
-      <value name="wholeNumber" display-name-key="Whole number" description-key="Whole number">2</value>
+    <property name="inputType" display-name-key="Input Type" description-key="Choose input type based on the information required, for example, if you’re asking the user to enter a whole number and you want to bring up the numeric keypad on a mobile device. If you’re asking the user to enter a number that might include decimal places, leave this option unselected to default to text input." of-type="Enum" usage="input" required="false">
+      <value name="wholeNumber" display-name-key="Whole number" description-key="Whole number">1</value>
     </property>
 
     <!-- Fixed or fluid width inputs -->
@@ -61,7 +60,7 @@
     </property>
 
     <!-- Spellcheck -->
-    <property name="toggleSpellcheck" display-name-key="Toggle spellcheck" description-key="Sometimes, browsers will spellcheck the information a user puts into a text input. If a user enters something which is recognised as a spelling error, sighted users will see a red line under the word. If you are asking users for information which is not appropriate to spellcheck, like a reference number, name, email address or National Insurance number, disable the spellcheck." of-type="Enum" usage="input" required="false">
+    <property name="toggleSpellcheck" display-name-key="Toggle spellcheck" description-key="Sometimes, browsers will spellcheck the information a user puts into a text input. If a user enters something which is recognised as a spelling error, sighted users will see a red line under the word. If you are asking users for information which is not appropriate to spellcheck, like a reference number, name, email address or National Insurance number, disable the spellcheck." of-type="Enum" usage="input" required="true">
       <value name="spellcheckOn" display-name-key="On" description-key="Spellcheck on">1</value>
       <value name="spellcheckOff" display-name-key="Off" description-key="Spellcheck off">2</value>
     </property>
