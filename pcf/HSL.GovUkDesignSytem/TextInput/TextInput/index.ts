@@ -48,8 +48,7 @@
 
 		// Configuration options for spellcheck (on or off)
 		private _spellcheck: string;
-		private _spellcheckOn: boolean;
-		private _spellcheckOff: boolean;
+		private _disableSpellcheck: boolean;
 
 
 		// Elements needed for setting up error messages 
@@ -146,7 +145,8 @@
 
 
 			this.fixedAndFluidWidthInputs();
-			this.inputType();
+		//	this.inputType();
+			this._spellcheck = this.disableSpellcheck();
 
 			//Configure and render Nunjucks templates
 			var runOnServer = "http://127.0.0.1:8080/";
@@ -308,22 +308,27 @@
 			}
 		};
 
-		private toggleSpellcheck () {
+		/**
+		 * Following guidance from the GOVUK Design System, there are occasions where spellcheck should be disabled:
+		 * "If you are asking users for information which is not appropriate to spellcheck, like a reference number, name, email address 
+		 * or National Insurance number, disable the spellcheck."
+		 * https://design-system.service.gov.uk/components/text-input/
+		 * By default, the component will have spellcheck enabled.
+		 */
+		private disableSpellcheck () {
 
-			// Spellcheck on
-			this._spellcheckOn = this._context.parameters.toggleSpellcheck.raw == "1";
-			// Spellcheck off
-			this._spellcheckOff = this._context.parameters.toggleSpellcheck.raw == "2";
+			this._disableSpellcheck = this._context.parameters.toggleSpellcheck.raw == "1";
 
-			if (this._spellcheckOn) {
-				this._spellcheck = "true";
-			}
-
-			if (this._spellcheckOff) {
-				this._spellcheck = "false";
+			if (this._disableSpellcheck) {
+				return "false";
+			} else {
+				return "true";
 			}
 		};
 
+		private toggleAutocomplete () {
+
+		};
 
 
 
