@@ -41,13 +41,6 @@
       <value name="oneQuarterWidth" display-name-key="One quarter width" description-key="One quarter width">12</value>
     </property>
 
-    <!-- Prefixes and Suffixes -->
-    <property name="prefixesAndSuffixes" display-name-key="Prefixes and Suffixes" description-key="Use prefixes and suffixes to help users enter things like currencies and measurements." of-type="Enum" usage="input" required="false">
-      <value name="prefixRequired" display-name-key="Prefix required" description-key="Prefix required">1</value>
-      <value name="suffixRequired" display-name-key="Suffix required" description-key="Suffix required">2</value>
-      <value name="prefixAndSuffixRequired" display-name-key="Prefix and suffix required" description-key="Prefix and suffix required">3</value>
-    </property>
-
     <!-- Prefix -->
     <property name="prefix" display-name-key="Prefix" description-key="Enter the prefix required." of-type="SingleLine.Text" usage="input" required="false"/>
     <!-- Suffix -->

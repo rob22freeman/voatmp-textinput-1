@@ -51,6 +51,10 @@
 		private _spellcheck: boolean;
 		private _disableSpellcheck: boolean;
 
+		// Configuration for prefix and/or suffix
+		private _prefix: string;
+		private _suffix: string;
+
 
 		// Elements needed for setting up error messages 
 		private _formGroupDiv: HTMLDivElement;
@@ -124,6 +128,7 @@
 			// Configuration methods
 			this.fixedAndFluidWidthInputs();
 			this.inputType();
+			this.prefixSuffix();
 			this._spellcheck = this.disableSpellcheck();
 
 			//Configure and render Nunjucks templates
@@ -138,6 +143,12 @@
 					text: this._heading,
 					classes: "govuk-label--l",
 					isPageHeading: true
+				  },
+				  prefix: {
+					text: this._prefix
+				  },
+				  suffix: {
+					text: this._suffix
 				  },
 				  classes: this._fixedAndFluidWidthInputsClass,
 				  hint: {
@@ -320,8 +331,25 @@
 			}
 		};
 
-		private toggleAutocomplete () {
+		/**
+		 * Use prefixes and suffixes to help users enter things like currencies and measurements.
+		 * https://design-system.service.gov.uk/components/text-input/
+		 * @returns {string} Returns the prefix or suffix entered in the form configuration and renders in the control.
+		 */
+		private prefixSuffix () {
+			
+			this._prefix = this._context.parameters.prefix.raw as string;
+			this._suffix = this._context.parameters.suffix.raw as string;
 
+			// prefix
+			if (this._prefix !== undefined) {
+				return this._prefix;
+			}
+
+			// suffix
+			if (this._suffix !== undefined) {
+				return this._suffix;
+			}
 		};
 
 
