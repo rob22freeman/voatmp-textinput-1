@@ -44,7 +44,8 @@
 
 		// Configuration option for input type
 		private _wholeNumber: boolean;
-		private _wholeNumberConfig: any [];
+		private _inputmode: string;
+		private _pattern: string;
 
 		// Configuration options for spellcheck (on or off)
 		private _spellcheck: boolean;
@@ -122,6 +123,10 @@
 
 			// The Portal automatically generates a container for the PCF which is the field logical name suffixed with "_Container"
 			this._containerLabel = this._uniqueIdentifier + "_Container";
+
+			// For whole number input mode, set the default values to "", unless the whole number option is selected in the configuration
+			this._inputmode = "";
+			this._pattern = "";
 /*
 			const optionArray: any = [];
 			(context.parameters.itemValue as ComponentFramework.PropertyTypes.MultiSelectOptionSetProperty).attributes?.Options.forEach(option =>
@@ -145,7 +150,7 @@
 
 
 			this.fixedAndFluidWidthInputs();
-		//	this.inputType();
+			this.inputType();
 			this._spellcheck = this.disableSpellcheck();
 
 			//Configure and render Nunjucks templates
@@ -165,7 +170,8 @@
 				  },
 				  id: this._uniqueIdentifier,
 				  name: this._uniqueIdentifier,
-//				  this._wholeNumberConfig
+				  inputmode: "",
+				  pattern: "",
 				  spellcheck: this._spellcheck
 				} });
 			
@@ -296,15 +302,22 @@
 			}
 		};
 
+		/**
+		 * If you’re asking the user to enter a whole number and you want to bring up the numeric keypad on a mobile device, 
+		 * set the inputmode attribute to numeric and the pattern attribute to [0-9]*.
+		 * If you’re asking the user to enter a number that might include decimal places, use input type="text" without inputmode or pattern attributes.
+		 * Do not set the inputmode attribute to decimal as it causes some devices to bring up a keypad without a key for the decimal separator.
+		 * https://design-system.service.gov.uk/components/text-input/
+		 * 
+		 */
 		private inputType () {
 
 			// selected option for Control Manifest: "Input Type"
 			this._wholeNumber = this._context.parameters.inputType.raw == "1";
-			this._wholeNumberConfig = [];
 
 			if (this._wholeNumber) {
-			let config = {inputmode: "numeric", pattern: "[0-9]*"};
-			this._wholeNumberConfig.push(config);
+				this._inputmode = "numeric", 
+				this._pattern = "[0-9]*"
 			}
 		};
 
