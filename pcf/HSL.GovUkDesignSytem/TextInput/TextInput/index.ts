@@ -111,9 +111,6 @@
 	
 			this._heading = context.parameters.heading.raw as string;
 			this._hint = context.parameters.hint.raw as string;
-			
-			// Store the values currently selected
-		//	this._selectedOptions = context.parameters.textInput.raw || [];
 
 			// The unique identifier should be configured to the field logical name
 			this._uniqueIdentifier = context.parameters.uniqueIdentifier.raw as string; // Required so should never be null
@@ -124,39 +121,19 @@
 			// The Portal automatically generates a container for the PCF which is the field logical name suffixed with "_Container"
 			this._containerLabel = this._uniqueIdentifier + "_Container";
 
-
-/*
-			const optionArray: any = [];
-			(context.parameters.itemValue as ComponentFramework.PropertyTypes.MultiSelectOptionSetProperty).attributes?.Options.forEach(option =>
-				{
-					let optionElement = document.createElement("option");
-					optionElement.setAttribute("value", String(option.Value));
-					optionElement.innerText = option.Label;
-					optionArray.push(optionElement.innerText = option.Label);
-				});
-
-			const radios: any = [];
-			function eachOption () {
-				let optionLength = optionArray.length;
-				for (let i = 0; i < optionLength; i++) {
-					let options = {value: optionArray[i], text: optionArray[i]};
-					radios.push(options);
-				}
-			};
-			eachOption();
-*/
-
-
+			// Configuration methods
 			this.fixedAndFluidWidthInputs();
 			this.inputType();
 			this._spellcheck = this.disableSpellcheck();
 
 			//Configure and render Nunjucks templates
-			var runOnServer = "http://127.0.0.1:8080/";
 			require('govuk-frontend');
-			var templatePath = "node_modules/govuk-frontend/govuk/components/";
-			var env = Nunjucks.configure(runOnServer + templatePath);
-			var renderedNunjucksTemplate = env.render('/input/template.njk',{params:{
+
+			const runOnServer = "http://127.0.0.1:8080/";
+			const templatePath = "node_modules/govuk-frontend/govuk/components/";
+			const env = Nunjucks.configure(runOnServer + templatePath);
+			
+			const renderedNunjucksTemplate = env.render('/input/template.njk',{params:{
 				label: {
 					text: this._heading,
 					classes: "govuk-label--l",
@@ -316,8 +293,10 @@
 			if (this._wholeNumber) {
 				this._inputmode = "numeric", 
 				this._pattern = "[0-9]*"
-			} else {
-				// Set the default values to "", unless the whole number option is selected in the configuration
+			}
+
+			// Set the default values to "", unless the whole number option is selected in the configuration			
+			else {
 				this._inputmode = "";
 				this._pattern = "";
 			}
