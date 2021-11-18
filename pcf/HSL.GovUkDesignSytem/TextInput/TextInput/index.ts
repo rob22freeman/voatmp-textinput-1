@@ -124,9 +124,7 @@
 			// The Portal automatically generates a container for the PCF which is the field logical name suffixed with "_Container"
 			this._containerLabel = this._uniqueIdentifier + "_Container";
 
-			// For whole number input mode, set the default values to "", unless the whole number option is selected in the configuration
-			this._inputmode = "";
-			this._pattern = "";
+
 /*
 			const optionArray: any = [];
 			(context.parameters.itemValue as ComponentFramework.PropertyTypes.MultiSelectOptionSetProperty).attributes?.Options.forEach(option =>
@@ -170,8 +168,8 @@
 				  },
 				  id: this._uniqueIdentifier,
 				  name: this._uniqueIdentifier,
-				  inputmode: "",
-				  pattern: "",
+				  inputmode: this._inputmode,
+				  pattern: this._pattern,
 				  spellcheck: this._spellcheck
 				} });
 			
@@ -318,6 +316,10 @@
 			if (this._wholeNumber) {
 				this._inputmode = "numeric", 
 				this._pattern = "[0-9]*"
+			} else {
+				// Set the default values to "", unless the whole number option is selected in the configuration
+				this._inputmode = "";
+				this._pattern = "";
 			}
 		};
 
