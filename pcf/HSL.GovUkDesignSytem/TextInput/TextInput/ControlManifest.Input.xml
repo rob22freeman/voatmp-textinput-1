@@ -21,7 +21,7 @@
     <property name="uniqueIdentifier" display-name-key="Unique Identifier" description-key="Unique idenfier for this fields control on form. Unless same field is present more than once on the form, use the field logical name. Only use lowercase letters and underscores." of-type="SingleLine.Text" usage="input" required="true" />
 
     <!-- Disable page heading -->
-    <property name="disablePageHeading" display-name-key="Diable Page Heading" description-key="Select this option if you are asking more than one question on the page." of-type="Enum" usage="input" required="false">
+    <property name="disablePageHeading" display-name-key="Disable Page Heading" description-key="Select this option if you are asking more than one question on the page." of-type="Enum" usage="input" required="false">
       <value name="disablePageHeading" display-name-key="Disable page heading" description-key="Select this option if you are asking more than one question on the page.">1</value>
     </property>
 
@@ -76,6 +76,7 @@
     <resources>
       <code path="index.ts" order="1"/>
       <css path="govuk-frontend-3.13.0.min.css" order="1" />
+      
       <!-- UNCOMMENT TO ADD MORE RESOURCES
       <css path="css/DateComponent.css" order="1" />
       <resx path="strings/DateComponent.1033.resx" version="1.0.0" />

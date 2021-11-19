@@ -217,9 +217,9 @@
 			
 			else {
 				this._disablePageHeading = {text: this._title};
-			}
-			
+			}	
 		};
+		
 		/**
 		 * Configure the size of the text input box based on the selected option for "Fixed and fluid width inputs".
 		 * If no option is selected, the default configuration is "full width", as dictated by the GOVUK Design System:
