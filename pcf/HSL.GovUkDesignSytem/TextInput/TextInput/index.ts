@@ -26,6 +26,9 @@
 		// Event Handler 'refreshData' reference
 		private _refreshData: EventListenerOrEventListenerObject;
 		
+		// Configuration for disabling page heading
+		private _disablePageHeadingIsTrue: boolean;
+		private _disablePageHeading: any;
 
 		// Configuration options for width of input box
 		private _fixedAndFluidWidthInputsClass: string;
@@ -74,7 +77,7 @@
 		private _uniqueIdentifier: string;
 		
 		// Heading (what is being asked for), Field Identifier (for the error messaging), Hint
-		private _heading: string;
+		private _title: string;
 
 		private _fieldIdentifier: string;
 
@@ -113,7 +116,7 @@
 			this._notifyOutputChanged = notifyOutputChanged;
 //			this._refreshData = this.refreshData.bind(this);
 	
-			this._heading = context.parameters.heading.raw as string;
+			this._title = context.parameters.title.raw as string;
 			this._hint = context.parameters.hint.raw as string;
 
 			// The unique identifier should be configured to the field logical name
@@ -126,7 +129,9 @@
 			this._containerLabel = this._uniqueIdentifier + "_Container";
 
 			// Configuration methods
+
 			this.fixedAndFluidWidthInputs();
+			this.disablePageHeading(this._title);
 			this.inputType();
 			this.prefixSuffix();
 			this._spellcheck = this.disableSpellcheck();
@@ -139,11 +144,7 @@
 			const env = Nunjucks.configure(runOnServer + templatePath);
 			
 			const renderedNunjucksTemplate = env.render('/input/template.njk',{params:{
-				label: {
-					text: this._heading,
-					classes: "govuk-label--l",
-					isPageHeading: true
-				  },
+				label: this._disablePageHeading,
 				  prefix: {
 					text: this._prefix
 				  },
@@ -184,21 +185,41 @@
 			};
 */
 			this._enableValidation = false;
-
+			
 			this.removeHintDiv();
 			this.registerPCFComponent(this);
 			this.pageValidation();
-		}
+		};
 
 		/**
 		 * Remove hint div from control if no hint text is required.
 		 */
-		public removeHintDiv() {
+		public removeHintDiv () {
 			if (this._hint === undefined) {
 				this._hintDiv.remove();
 			}
-		}
+		};
 
+		/**
+		 * Following guidance from GOV UK Design System: "if you're asking more than one question on the page, do not set the
+		 * contents of <label> as the page heading." https://design-system.service.gov.uk/components/text-input/
+		 * @param title {string} What information do you intend to capture?
+		 * @returns {any} Returns control title only if true, or title plus page heading config if false.
+		 * @private
+		 */
+		private disablePageHeading (_title: string) {
+
+			this._disablePageHeadingIsTrue = this._context.parameters.disablePageHeading.raw =="1";
+
+			if (!this._disablePageHeadingIsTrue) {
+				this._disablePageHeading = {text: this._title, classes: "govuk-label--l", isPageHeading: true};
+			} 
+			
+			else {
+				this._disablePageHeading = {text: this._title};
+			}
+			
+		};
 		/**
 		 * Configure the size of the text input box based on the selected option for "Fixed and fluid width inputs".
 		 * If no option is selected, the default configuration is "full width", as dictated by the GOVUK Design System:
