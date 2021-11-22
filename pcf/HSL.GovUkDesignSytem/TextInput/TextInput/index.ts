@@ -19,9 +19,6 @@
 
 		// PCF framework delegate which will be assigned to this object which would be called whenever any update happens
 		private _notifyOutputChanged: () => void;
-		
-		// Internal structure used to store the values of the currently selected options
-//		private _selectedOptions: number[];
 
 		// Event Handler 'refreshData' reference
 		private _refreshData: EventListenerOrEventListenerObject;
@@ -58,38 +55,29 @@
 		private _prefix: string;
 		private _suffix: string;
 
-
 		// Elements needed for setting up error messages 
 		private _formGroupDiv: HTMLDivElement;
-
 		private _fieldSet: HTMLFieldSetElement;
-
 		private _hintDiv: HTMLDivElement;
-
-		private _radiosDiv: HTMLDivElement;
+		private _textInputDiv: HTMLDivElement;
 		
-		private _radioOptionList: HTMLCollectionOf<HTMLDivElement>;
+		// Text input field
+		private _textInput: HTMLInputElement;
 
-		private _radioItem: HTMLOptionElement;
-		
+		// Validation and unique identifier
 		private _enableValidation : boolean;		
-		
 		private _uniqueIdentifier: string;
+		private _textInputId: string;
 		
 		// Heading (what is being asked for), Field Identifier (for the error messaging), Hint
 		private _title: string;
-
 		private _fieldIdentifier: string;
-
 	  	private _hint: string;
-
 		private _hintId: string;
 
 		// Error message to be displayed
 		private _errorMessage: string;
-
 		private _itemId: string;
-		
 		private _containerLabel: string;
 
 		/**
@@ -114,10 +102,14 @@
 			// Add control initialization code
 			this._context = context;
 			this._notifyOutputChanged = notifyOutputChanged;
-//			this._refreshData = this.refreshData.bind(this);
-	
+			this._refreshData = this.refreshData.bind(this);
+			
+			// The unique identifier should be configured to the field logical name - required so should never be null
+			this._uniqueIdentifier = context.parameters.uniqueIdentifier.raw as string;
+
 			this._title = context.parameters.title.raw as string;
 			this._hint = context.parameters.hint.raw as string;
+			this._textInputId = this._uniqueIdentifier as string;
 
 			// The unique identifier should be configured to the field logical name
 			this._uniqueIdentifier = context.parameters.uniqueIdentifier.raw as string; // Required so should never be null
@@ -166,25 +158,20 @@
 			this._container.innerHTML =
 
 			// Override that PCF Test Environment aligns to centre
-				"<style>.control-pane{text-align:unset;}</style>\n"
-				+ renderedNunjucksTemplate;
+			"<style>.control-pane{text-align:unset;}</style>\n"
+			+ renderedNunjucksTemplate;
 
 			// Add the entire container to the control's main container
 			container.appendChild(this._container);
 			
-	//		this._formGroupDiv = document.getElementsByClassName("govuk-form-group")[0] as HTMLDivElement;
-	//		this._fieldSet = document.getElementsByClassName("govuk-fieldset")[0] as HTMLFieldSetElement;
+			this._formGroupDiv = document.getElementsByClassName("govuk-form-group")[0] as HTMLDivElement;
+			this._fieldSet = document.getElementsByClassName("govuk-fieldset")[0] as HTMLFieldSetElement;
 			this._hintDiv = document.getElementById(this._hintId) as HTMLDivElement;
-	//		this._radiosDiv = document.getElementsByClassName("govuk-radios")[0] as HTMLDivElement;
-/*
-			this._radioOptionList = document.getElementsByClassName("govuk-radios__input") as HTMLCollectionOf<HTMLDivElement>;
-			let radioLength = this._radioOptionList.length;
-			for (let i = 0; i < radioLength; i++) {
-				this._radioItem = document.getElementsByClassName("govuk-radios__input")[i] as HTMLOptionElement
-				this._radioItem.addEventListener("change", this._refreshData);
-			};
-*/
-			this._enableValidation = false;
+			this._textInputDiv = document.getElementsByClassName("govuk-input " + this._fixedAndFluidWidthInputsClass)[0] as HTMLDivElement;
+
+			this._textInput = document.getElementById(this._textInputId) as HTMLInputElement;
+
+			this._textInput.addEventListener("change", this._refreshData);
 			
 			this.removeHintDiv();
 			this.registerPCFComponent(this);
@@ -373,18 +360,6 @@
 			}
 		};
 
-
-
-/*		public enableValidation() {
-
-			let validationEnabled = this._enableValidation = true;
-			let doValidation = this._selectedOptions.length === 0 && validationEnabled;
-
-			if (doValidation) {
-				this.performInputValidation();
-			};
-		}
-*/
 		/**
 		 * Show error on control.
 		 * @param errorMessageText Error message to display
@@ -404,7 +379,7 @@
 			errorMessageSpan.id = errorMessageId;
 			errorMessageSpan.innerHTML = "<span class=\"govuk-visually-hidden\">Error:</span> " + errorMessageText;
 
-			this._radiosDiv.before(errorMessageSpan);
+			this._textInputDiv.before(errorMessageSpan);
 
 			// Add error message to field set's aria-describedby attribute,
 			// if it doesn't already exist
@@ -446,6 +421,25 @@
 			}
 
 			this._fieldSet.setAttribute("aria-describedby", ariaDescribedByList?.join(" ") ?? "");
+
+			// Remove error styles from input fields
+			this._textInput.classList.remove("govuk-input--error");
+		}
+
+		/**
+		 * Updats the values to the internal value variable we are storing and also updats the html label that displays the value
+		 * @param context This "Input Properties" containing the parameters, component metadata and interface functions 
+		 */
+		public refreshData (evt: Event): void {
+			
+			let doValidation: boolean = this._enableValidation || ((this._textInput.value) as unknown as boolean);
+
+			if (doValidation) {
+				if (!this._enableValidation) {
+					this._value = this._textInput.value;
+					this._notifyOutputChanged();
+				}
+			}
 		}
 
 		/**
@@ -458,19 +452,6 @@
 			return string.charAt(0).toLowerCase() + string.slice(1);
 		}
 
-		/**
-		 * Updates the values to the internal value variable we are storing and also updates the html label that displays the value
-		 * @param context : The "Input Properties" containing the parameters, component metadata and interface functions
-		 */
-/*		public refreshData(evt: Event): void {
-			
-			const value = Number(this._radioItem.getAttribute("value"))
-			this._selectedOptions.push(value);
-			this._enableValidation = false;
-			this.HideError();
-			this._notifyOutputChanged();			
-		}
-*/
 		/**
 		 * Validates contents of input fields and updates UI with appropriate error messages.
 		 * @returns {boolean} True if validation passed. Otherwise, false.
@@ -544,10 +525,13 @@
 		// storing the latest context from the control.
 		this._value = context.parameters.textInput.raw;
 	  	this._context = context;
-		/*	
-			if () {
-			this._enableValidation = true;
-			};*/
+			
+			if (this._value) {
+				this._textInput.value = this._value;
+
+				// Field has been set, start validation following any changes
+				this._enableValidation = true;
+			}
 		}
 	
 		/** 
