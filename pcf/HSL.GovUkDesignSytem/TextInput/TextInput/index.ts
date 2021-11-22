@@ -55,6 +55,10 @@
 		private _prefix: string;
 		private _suffix: string;
 
+		// Configuration for max or min character input length
+		private _maxInputLength: string | undefined;
+		private _mixInputLenght: string | undefined;
+
 		// Elements needed for setting up error messages 
 		private _formGroupDiv: HTMLDivElement;
 		private _fieldSet: HTMLFieldSetElement;
@@ -79,6 +83,9 @@
 		private _errorMessage: string;
 		private _itemId: string;
 		private _containerLabel: string;
+
+		// Error validation methods
+		private _maxInputLengthRequired: boolean;
 
 		/**
 		 * Empty constructor.
@@ -121,7 +128,6 @@
 			this._containerLabel = this._uniqueIdentifier + "_Container";
 
 			// Configuration methods
-
 			this.fixedAndFluidWidthInputs();
 			this.disablePageHeading(this._title);
 			this.inputType();
@@ -165,7 +171,7 @@
 			container.appendChild(this._container);
 			
 			this._formGroupDiv = document.getElementsByClassName("govuk-form-group")[0] as HTMLDivElement;
-			this._fieldSet = document.getElementsByClassName("govuk-fieldset")[0] as HTMLFieldSetElement;
+		//	this._fieldSet = document.getElementsByClassName("govuk-fieldset")[0] as HTMLFieldSetElement;
 			this._hintDiv = document.getElementById(this._hintId) as HTMLDivElement;
 			this._textInputDiv = document.getElementsByClassName("govuk-input " + this._fixedAndFluidWidthInputsClass)[0] as HTMLDivElement;
 
@@ -186,6 +192,220 @@
 				this._hintDiv.remove();
 			}
 		};
+
+		/**
+		 * Show error on control.
+		 * @param errorMessageText Error message to display
+		 */
+		 public ShowError(errorMessageText : string) {
+			
+			// Hide error message if one already exists
+			this.HideError();
+
+			this._formGroupDiv.classList.add("govuk-form-group--error");
+
+			let errorMessageId = "errorMessage";
+
+			// Create and add error message span
+			let errorMessageSpan = document.createElement("span");
+			errorMessageSpan.classList.add("govuk-error-message");
+			errorMessageSpan.id = errorMessageId;
+			errorMessageSpan.innerHTML = "<span class=\"govuk-visually-hidden\">Error:</span> " + errorMessageText;
+
+			this._textInputDiv.before(errorMessageSpan);
+
+			// Add error message to field set's aria-describedby attribute,
+			// if it doesn't already exist
+			let ariaDescribedBy = this._formGroupDiv.getAttribute("aria-describedby");
+			let ariaDescribedByList = ariaDescribedBy?.split(" ");
+			let hasAriaDescribedByListGotId = ariaDescribedByList?.includes(errorMessageId);
+			
+			if (!hasAriaDescribedByListGotId) {
+				ariaDescribedByList?.push(errorMessageId);
+			}
+
+			this._formGroupDiv.setAttribute("aria-describedby", ariaDescribedByList?.join(" ") ?? "");
+
+			// Store error message for use in page level validation
+			this._errorMessage = errorMessageText;
+		}
+
+		/**
+		 * Hide error on control.
+		 */
+		private HideError() {
+			
+			let errorMessageId = "errorMessage";
+
+			// Remove form group div error styling if it's present
+			this._formGroupDiv.classList.remove("govuk-form-group--error");
+
+			// Delete error message div if it exists
+			let errorMessageDiv = document.getElementById(errorMessageId);
+			errorMessageDiv?.remove();
+
+			// Remove error message from field set's aria-describedby attribute, if it exists
+			let ariaDescribedBy = this._formGroupDiv.getAttribute("aria-describedby");
+			let ariaDescribedByList = ariaDescribedBy?.split(" ");
+			let AriaDescribedByListErrorIdIndex = ariaDescribedByList?.indexOf(errorMessageId) ?? -1;
+			
+			if (AriaDescribedByListErrorIdIndex !== -1) {
+				ariaDescribedByList?.splice(AriaDescribedByListErrorIdIndex, 1);
+			}
+
+			this._formGroupDiv.setAttribute("aria-describedby", ariaDescribedByList?.join(" ") ?? "");
+
+			// Remove error styles from input fields
+			this._textInput.classList.remove("govuk-input--error");
+		}
+
+		/**
+		 * Updates the values to the internal value variable we are storing and also updats the html label that displays the value
+		 * @param context This "Input Properties" containing the parameters, component metadata and interface functions 
+		 */
+		 public refreshData (evt: Event): void {
+			
+			let doValidation: boolean = this._enableValidation || ((this._textInput.value) as unknown as boolean);
+
+			if (doValidation) {
+				if (!this._enableValidation) {
+					this._enableValidation = true;
+				}
+
+				let inputIsValid: boolean = this.performInputValidation();
+
+				if (inputIsValid) {
+					this._value = this._textInput.value;
+					this._notifyOutputChanged();
+				}
+			}
+		}
+
+		/**
+		 * Validates contents of input fields and updates UI with appropriate error messages.
+		 * @returns {boolean} True if validation passed. Otherwise, false.
+		 * @private
+		 */
+		 private performInputValidation() : boolean {
+			
+			let fieldIdentifier = this._fieldIdentifier = this._context.parameters.fieldIdentifierErrorMessage.raw as string;
+			let isInputValid : boolean = true;
+
+			// Reset error state
+			this.HideError();
+
+			isInputValid &&= this.handleIfInputIsEmpty(fieldIdentifier);
+			isInputValid &&= this.handleIfInputIsTooLong(fieldIdentifier);
+
+			return isInputValid;
+		}
+
+		private pageValidation() {
+
+			let _window = window as any;
+			if (typeof (_window.Page_Validators) == "undefined") {
+				return;
+			}
+		
+			let newValidator = (document.createElement('span') as any); //any = custom properties for val
+			newValidator.style.display = "none";
+			newValidator.id = this._uniqueIdentifier + "Validator";
+			newValidator.controltovalidate = this._uniqueIdentifier;
+			newValidator.evaluationfunction = function () {
+		
+				let result = _window.HSL.PCFRegistrar[this.controltovalidate].performInputValidation();
+				this.isvalid = result;
+		
+				if (!this.isvalid) {
+					let errorMessageText = _window.HSL.PCFRegistrar[this.controltovalidate]._errorMessage;
+					this.errormessage = "<a href='#" + _window.HSL.PCFRegistrar[this.controltovalidate]._containerLabel + "' onclick=\"javascript: let component = '" + _window.HSL.PCFRegistrar[this.controltovalidate]._containerLabel + "'; component.scrollIntoView; return false;\">" + errorMessageText + "</a>";
+				} else {
+					this.errormessage = null;
+				}
+			}
+		
+			_window.Page_Validators.push(newValidator);
+		}
+
+		/**
+		 * Capitalises first letter of error message for showError output
+		 * @param string {string} Error message to have first letter capitalised.
+		 * @returns {string} Error message with first letter capitalised.
+		 */
+		private firstCharUpperCase(string: string): string {
+
+			return string.charAt(0).toUpperCase() + string.slice(1);
+		}	
+
+		/**
+		 * Converts first letter of error message for showError output to lowercase (acting as a fail safe so the correct format is always displayed)
+		 * @param string {string} Error message to have first letter converted to lowercase.
+		 * @returns {string} Error message with first letter converted to lowercase.
+		 */
+		 private firstCharLowerCase(string: string): string {
+			
+			return string.charAt(0).toLowerCase() + string.slice(1);
+		}
+
+		/**
+		 * Error validation: handle if input is empty. Say 'Enter [whatever it is]', for example, 'Enter your first name'.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		private handleIfInputIsEmpty (fieldIdentifier: string): boolean {
+
+			let inputIsEmpty = !this._textInput.value
+
+			if (inputIsEmpty) {
+				this.ShowError('Enter ' + this.firstCharLowerCase(fieldIdentifier));
+			}
+
+			return !inputIsEmpty;
+		}
+
+		/**
+		 * Error validation: handle if the input is too long. Say '[whatever it is] must be [number] characters or fewer', 
+		 * for example, 'Address line 1 must be 35 characters or fewer'.
+		 * Maximum input length automatically configured in Control Manifest if a fixed width option is selected, otherwise a custom
+		 * value (optional) can be selected.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		private handleIfInputIsTooLong (fieldIdentifier: string): boolean {
+
+			this._characterWidth2 = this._context.parameters.fixedAndFluidWidthInputs.raw == "1";
+			this._characterWidth3 = this._context.parameters.fixedAndFluidWidthInputs.raw == "2";
+			this._characterWidth4 = this._context.parameters.fixedAndFluidWidthInputs.raw == "3";
+			this._characterWidth5 = this._context.parameters.fixedAndFluidWidthInputs.raw == "4";
+			this._characterWidth10 = this._context.parameters.fixedAndFluidWidthInputs.raw == "5";
+			this._characterWidth20 = this._context.parameters.fixedAndFluidWidthInputs.raw == "6";
+			this._maxInputLength = (this._context.parameters.maxInputLength.raw == undefined) ? undefined : this._context.parameters.maxInputLength.raw;
+
+			// Set the max character length of the input field to fixed character width if selected, for example:
+			// if "2 character width" is chosen, set the max character length to 2, or use the value of the 
+			// "Max input length" setting if one has been defined, otherwise return undefined.
+			let maxInputLengthValue = 
+			(
+				(this._characterWidth2) ? 2 : 
+				(this._characterWidth3) ? 3 :
+				(this._characterWidth4) ? 4 :
+				(this._characterWidth5) ? 5 :
+				(this._characterWidth10) ? 10 :
+				(this._characterWidth20) ? 20 :
+				this._maxInputLength
+			);
+
+			let inputText = this._textInput.value; 
+			let isInputTooLong = (maxInputLengthValue != undefined) ? (inputText.length > maxInputLengthValue) : false;
+			
+			if (isInputTooLong) {
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be " + maxInputLengthValue + " characters or fewer");
+			}
+
+			return isInputTooLong;
+		}
 
 		/**
 		 * Following guidance from GOV UK Design System: "if you're asking more than one question on the page, do not set the
@@ -360,145 +580,6 @@
 			}
 		};
 
-		/**
-		 * Show error on control.
-		 * @param errorMessageText Error message to display
-		 */
-		public ShowError(errorMessageText : string) {
-			
-			// Hide error message if one already exists
-			this.HideError();
-
-			this._formGroupDiv.classList.add("govuk-form-group--error");
-
-			let errorMessageId = "errorMessage";
-
-			// Create and add error message span
-			let errorMessageSpan = document.createElement("span");
-			errorMessageSpan.classList.add("govuk-error-message");
-			errorMessageSpan.id = errorMessageId;
-			errorMessageSpan.innerHTML = "<span class=\"govuk-visually-hidden\">Error:</span> " + errorMessageText;
-
-			this._textInputDiv.before(errorMessageSpan);
-
-			// Add error message to field set's aria-describedby attribute,
-			// if it doesn't already exist
-			let ariaDescribedBy = this._fieldSet.getAttribute("aria-describedby");
-			let ariaDescribedByList = ariaDescribedBy?.split(" ");
-			let hasAriaDescribedByListGotId = ariaDescribedByList?.includes(errorMessageId);
-			
-			if (!hasAriaDescribedByListGotId) {
-				ariaDescribedByList?.push(errorMessageId);
-			}
-
-			this._fieldSet.setAttribute("aria-describedby", ariaDescribedByList?.join(" ") ?? "");
-
-			// Store error message for use in page level validation
-			this._errorMessage = errorMessageText;
-		}
-
-		/**
-		 * Hide error on control.
-		 */
-		private HideError() {
-			
-			let errorMessageId = "errorMessage";
-
-			// Remove form group div error styling if it's present
-			this._formGroupDiv.classList.remove("govuk-form-group--error");
-
-			// Delete error message div if it exists
-			let errorMessageDiv = document.getElementById(errorMessageId);
-			errorMessageDiv?.remove();
-
-			// Remove error message from field set's aria-describedby attribute, if it exists
-			let ariaDescribedBy = this._fieldSet.getAttribute("aria-describedby");
-			let ariaDescribedByList = ariaDescribedBy?.split(" ");
-			let AriaDescribedByListErrorIdIndex = ariaDescribedByList?.indexOf(errorMessageId) ?? -1;
-			
-			if (AriaDescribedByListErrorIdIndex !== -1) {
-				ariaDescribedByList?.splice(AriaDescribedByListErrorIdIndex, 1);
-			}
-
-			this._fieldSet.setAttribute("aria-describedby", ariaDescribedByList?.join(" ") ?? "");
-
-			// Remove error styles from input fields
-			this._textInput.classList.remove("govuk-input--error");
-		}
-
-		/**
-		 * Updats the values to the internal value variable we are storing and also updats the html label that displays the value
-		 * @param context This "Input Properties" containing the parameters, component metadata and interface functions 
-		 */
-		public refreshData (evt: Event): void {
-			
-			let doValidation: boolean = this._enableValidation || ((this._textInput.value) as unknown as boolean);
-
-			if (doValidation) {
-				if (!this._enableValidation) {
-					this._value = this._textInput.value;
-					this._notifyOutputChanged();
-				}
-			}
-		}
-
-		/**
-		 * Converts first letter of error message for showError output to lowercase (acting as a fail safe so the correct format is always displayed)
-		 * @param string {string} Error message to have first letter converted to lowercase.
-		 * @returns {string} Error message with first letter converted to lowercase.
-		 */
-		 private firstCharLowerCase(string: string): string {
-			
-			return string.charAt(0).toLowerCase() + string.slice(1);
-		}
-
-		/**
-		 * Validates contents of input fields and updates UI with appropriate error messages.
-		 * @returns {boolean} True if validation passed. Otherwise, false.
-		 * @private
-		 */
-		private performInputValidation() : boolean {
-			
-			let fieldIdentifier = this._fieldIdentifier = this._context.parameters.fieldIdentifierErrorMessage.raw as string;
-			let isInputValid : boolean = true;
-
-			// Reset error state
-			this.HideError();
-
-			//if (this._enableValidation === true) {
-			//	isInputValid &&= this.handleIfNothingIsSelected(fieldIdentifier);
-			//};
-
-			return isInputValid;
-		}
-
-		private pageValidation() {
-
-			let _window = window as any;
-			if (typeof (_window.Page_Validators) == "undefined") {
-				return;
-			}
-		
-			let newValidator = (document.createElement('span') as any); //any = custom properties for val
-			newValidator.style.display = "none";
-			newValidator.id = this._uniqueIdentifier + "Validator";
-			newValidator.controltovalidate = this._uniqueIdentifier;
-			newValidator.evaluationfunction = function () {
-		
-				let result = _window.HSL.PCFRegistrar[this.controltovalidate].performInputValidation();
-				this.isvalid = result;
-		
-				if (!this.isvalid) {
-					let errorMessageText = _window.HSL.PCFRegistrar[this.controltovalidate]._errorMessage;
-					this.errormessage = "<a href='#" + _window.HSL.PCFRegistrar[this.controltovalidate]._containerLabel + "' onclick=\"javascript: let component = '" + _window.HSL.PCFRegistrar[this.controltovalidate]._containerLabel + "'; component.scrollIntoView; return false;\">" + errorMessageText + "</a>";
-				} else {
-					this.errormessage = null;
-				}
-			}
-		
-			_window.Page_Validators.push(newValidator);
-		}
-			
 		/**
 		 * @param fieldIdentifier {string} Identify name of field to display in error messages
 		 * @returns {boolean} Returns true if nothing is selected. Otherwise false;
