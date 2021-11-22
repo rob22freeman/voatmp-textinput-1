@@ -62,6 +62,10 @@
       <value name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Disable Spellcheck">1</value>
     </property>
     
+    <!-- Maximum or minimun input character length -->
+    <property name="maxInputLength" display-name-key="Max input length" description-key="The maximum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="minInputLength" display-name-key="Min input length" description-key="The minimum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
+
     <!-- 
       Property node's of-type attribute can be of-type-group attribute. 
       Example:
