@@ -61,7 +61,7 @@
 
 		// Elements needed for setting up error messages 
 		private _formGroupDiv: HTMLDivElement;
-		private _fieldSet: HTMLFieldSetElement;
+		private _titleDiv: HTMLLabelElement;
 		private _hintDiv: HTMLDivElement;
 		private _textInputDiv: HTMLDivElement;
 		
@@ -171,7 +171,7 @@
 			container.appendChild(this._container);
 			
 			this._formGroupDiv = document.getElementsByClassName("govuk-form-group")[0] as HTMLDivElement;
-		//	this._fieldSet = document.getElementsByClassName("govuk-fieldset")[0] as HTMLFieldSetElement;
+			this._titleDiv = document.getElementsByTagName("label")[0] as HTMLLabelElement
 			this._hintDiv = document.getElementById(this._hintId) as HTMLDivElement;
 			this._textInputDiv = document.getElementsByClassName("govuk-input " + this._fixedAndFluidWidthInputsClass)[0] as HTMLDivElement;
 
@@ -212,8 +212,13 @@
 			errorMessageSpan.id = errorMessageId;
 			errorMessageSpan.innerHTML = "<span class=\"govuk-visually-hidden\">Error:</span> " + errorMessageText;
 
-			this._textInputDiv.before(errorMessageSpan);
-
+			// Show the error message in the right place on the control depending on whether a hint is included or not
+			if (this._hint === undefined) {
+				this._titleDiv.after(errorMessageSpan);
+			} else {
+				this._hintDiv.after(errorMessageSpan);
+			};
+			
 			// Add error message to field set's aria-describedby attribute,
 			// if it doesn't already exist
 			let ariaDescribedBy = this._formGroupDiv.getAttribute("aria-describedby");
@@ -225,6 +230,9 @@
 			}
 
 			this._formGroupDiv.setAttribute("aria-describedby", ariaDescribedByList?.join(" ") ?? "");
+
+			// Apply error highlighting styling to text input field
+			this._textInput.classList.add("govuk-input--error");
 
 			// Store error message for use in page level validation
 			this._errorMessage = errorMessageText;
@@ -255,7 +263,7 @@
 
 			this._formGroupDiv.setAttribute("aria-describedby", ariaDescribedByList?.join(" ") ?? "");
 
-			// Remove error styles from input fields
+			// Remove error styles from input field
 			this._textInput.classList.remove("govuk-input--error");
 		}
 

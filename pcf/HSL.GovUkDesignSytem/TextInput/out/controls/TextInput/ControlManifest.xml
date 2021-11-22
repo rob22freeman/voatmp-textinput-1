@@ -35,8 +35,8 @@
     <property name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Sometimes, browsers will spellcheck the information a user puts into a text input. If a user enters something which is recognised as a spelling error, sighted users will see a red line under the word. If you are asking users for information which is not appropriate to spellcheck, like a reference number, name, email address or National Insurance number, disable the spellcheck." of-type="Enum" usage="input" required="false">
       <value name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Disable Spellcheck">1</value>
     </property>
-    <property name="maxInputLength" display-name-key="Max Input Length" description-key="The maximum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
-    <property name="minInputLength" display-name-key="Min Input Length" description-key="The minimum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="maxInputLength" display-name-key="Max input length" description-key="The maximum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="minInputLength" display-name-key="Min input length" description-key="The minimum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
     <resources>
       <code path="bundle.js" order="1"/>
       <css path="govuk-frontend-3.13.0.min.css" order="1"/>
