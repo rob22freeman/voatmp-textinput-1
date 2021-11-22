@@ -414,7 +414,7 @@
 				this._errorFocusId = this._textInputId;
 			}
 
-			return isInputTooLong;
+			return !isInputTooLong;
 		}
 
 		/**
