@@ -72,6 +72,7 @@
 		private _enableValidation : boolean;		
 		private _uniqueIdentifier: string;
 		private _textInputId: string;
+		private _errorFocusId: string;
 		
 		// Heading (what is being asked for), Field Identifier (for the error messaging), Hint
 		private _title: string;
@@ -176,7 +177,6 @@
 			this._textInputDiv = document.getElementsByClassName("govuk-input " + this._fixedAndFluidWidthInputsClass)[0] as HTMLDivElement;
 
 			this._textInput = document.getElementById(this._textInputId) as HTMLInputElement;
-
 			this._textInput.addEventListener("change", this._refreshData);
 			
 			this.removeHintDiv();
@@ -326,7 +326,7 @@
 		
 				if (!this.isvalid) {
 					let errorMessageText = _window.HSL.PCFRegistrar[this.controltovalidate]._errorMessage;
-					this.errormessage = "<a href='#" + _window.HSL.PCFRegistrar[this.controltovalidate]._containerLabel + "' onclick=\"javascript: let component = '" + _window.HSL.PCFRegistrar[this.controltovalidate]._containerLabel + "'; component.scrollIntoView; return false;\">" + errorMessageText + "</a>";
+					this.errormessage = "<a href='#" + _window.HSL.PCFRegistrar[this.controltovalidate]._containerLabel + "' onclick=\"javascript: scrollToAndFocus('" + _window.HSL.PCFRegistrar[this.controltovalidate]._containerLabel + "', '" + _window.HSL.PCFRegistrar[this.controltovalidate]._errorFocusId + "'); return false;\">" + errorMessageText + "</a>";
 				} else {
 					this.errormessage = null;
 				}
@@ -367,6 +367,7 @@
 
 			if (inputIsEmpty) {
 				this.ShowError('Enter ' + this.firstCharLowerCase(fieldIdentifier));
+				this._errorFocusId = this._textInputId;
 			}
 
 			return !inputIsEmpty;
@@ -410,6 +411,7 @@
 			
 			if (isInputTooLong) {
 				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be " + maxInputLengthValue + " characters or fewer");
+				this._errorFocusId = this._textInputId;
 			}
 
 			return isInputTooLong;
