@@ -45,6 +45,10 @@
       <value name="oneThirdWidth" display-name-key="One third width" description-key="One third width">11</value>
       <value name="oneQuarterWidth" display-name-key="One quarter width" description-key="One quarter width">12</value>
     </property>
+ 
+    <!-- Maximum or minimun input character length -->
+    <property name="maxInputLength" display-name-key="Max input length" description-key="The maximum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="minInputLength" display-name-key="Min input length" description-key="The minimum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
 
     <!-- Prefix -->
     <property name="prefix" display-name-key="Prefix" description-key="Enter the prefix required." of-type="SingleLine.Text" usage="input" required="false"/>
@@ -61,11 +65,7 @@
     <property name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Sometimes, browsers will spellcheck the information a user puts into a text input. If a user enters something which is recognised as a spelling error, sighted users will see a red line under the word. If you are asking users for information which is not appropriate to spellcheck, like a reference number, name, email address or National Insurance number, disable the spellcheck." of-type="Enum" usage="input" required="false">
       <value name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Disable Spellcheck">1</value>
     </property>
-    
-    <!-- Maximum or minimun input character length -->
-    <property name="maxInputLength" display-name-key="Max input length" description-key="The maximum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
-    <property name="minInputLength" display-name-key="Min input length" description-key="The minimum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
-
+   
     <!-- 
       Property node's of-type attribute can be of-type-group attribute. 
       Example:

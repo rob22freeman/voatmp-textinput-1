@@ -57,7 +57,7 @@
 
 		// Configuration for max or min character input length
 		private _maxInputLength: string | undefined;
-		private _mixInputLenght: string | undefined;
+		private _minInputLength: string | undefined;
 
 		// Elements needed for setting up error messages 
 		private _formGroupDiv: HTMLDivElement;
@@ -304,6 +304,7 @@
 
 			isInputValid &&= this.handleIfInputIsEmpty(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooLong(fieldIdentifier);
+			isInputValid &&= this.handleIfInputIsTooShort(fieldIdentifier);
 
 			return isInputValid;
 		}
@@ -415,6 +416,30 @@
 			}
 
 			return !isInputTooLong;
+		}
+
+		/**
+		 * Error validation: handle if the input is too short. Say '[whatever it is] must be [number] characters or more', 
+		 * for example, 'Full name must be 2 characters or more'.
+		 * Minimum input length not set by default, unless a custom value is selected via the Control Manifest.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		private handleIfInputIsTooShort (fieldIdentifier: string): boolean {
+
+			this._minInputLength = (this._context.parameters.minInputLength.raw == undefined) ? undefined : this._context.parameters.minInputLength.raw;
+			let minInputLengthValue = this._minInputLength;
+			
+			let inputText = this._textInput.value;
+			let isInputTooShort = (minInputLengthValue != undefined) ? (inputText.length < parseInt(minInputLengthValue)) : false;
+
+			if (isInputTooShort) {
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be " + minInputLengthValue + " characters or more");
+				this._errorFocusId = this._textInputId;
+			}
+
+			return !isInputTooShort;
 		}
 
 		/**
