@@ -10,7 +10,7 @@ export interface IInputs {
     hint: ComponentFramework.PropertyTypes.StringProperty;
     uniqueIdentifier: ComponentFramework.PropertyTypes.StringProperty;
     disablePageHeading: ComponentFramework.PropertyTypes.EnumProperty<"1">;
-    inputType: ComponentFramework.PropertyTypes.EnumProperty<"1">;
+    inputType: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
     fixedAndFluidWidthInputs: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12">;
     maxInputLength: ComponentFramework.PropertyTypes.StringProperty;
     minInputLength: ComponentFramework.PropertyTypes.StringProperty;

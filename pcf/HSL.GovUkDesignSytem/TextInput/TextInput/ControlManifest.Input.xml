@@ -27,7 +27,8 @@
 
     <!-- Input type -->   
     <property name="inputType" display-name-key="Input Type" description-key="Choose input type based on the information required, for example, if you’re asking the user to enter a whole number and you want to bring up the numeric keypad on a mobile device. If you’re asking the user to enter a number that might include decimal places, leave this option unselected to default to text input." of-type="Enum" usage="input" required="false">
-      <value name="wholeNumber" display-name-key="Whole number" description-key="Whole number">1</value>
+      <value name="wholeNumber" display-name-key="Whole number" description-key="Whole number input only and brings up the numeric input">1</value>
+      <value name="mustBeANumber" display-name-key="Must be a number" description-key="Choose this option if the input must be a number, either a whole number or a decimal, but you do not need the numeric input as with whole number">2</value>
     </property>
 
     <!-- Fixed or fluid width inputs -->
