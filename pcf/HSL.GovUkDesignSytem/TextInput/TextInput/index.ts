@@ -307,6 +307,7 @@
 			isInputValid &&= this.handleIfInputHasBothMinAndMaxLength(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooLong(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooShort(fieldIdentifier);
+			isInputValid &&= this.handleIfInputIsNotAWholeNumber(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsNotANumber(fieldIdentifier);
 
 			return isInputValid;
@@ -497,18 +498,15 @@
 		}
 
 		/**
-		 * Error validation: handle if the input is not a number, or if the input is not a whole number.
-		 * Say '[whatever it is] must be a number', for example, 'Hours worked a week must be a number', or say '[whatever it is]
-		 * must be a whole number', for example, 'Hours worked in a week must be a whole number'.
-		 * If the input requires a decimal, use a decimal in the example. If the input allows both whole numbers and decimals, use both in the example.
+		 * Error validation: handle if the input is not a whole number. Say '[whatever it is] must be a whole number', 
+		 * for example, 'Hours worked in a week must be a whole number'.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
 		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
 		 * @private
 		 */
-		private handleIfInputIsNotANumber (fieldIdentifier: string): boolean {
+		private handleIfInputIsNotAWholeNumber (fieldIdentifier: string): boolean {
 
 			let mustBeAWholeNumber = this._wholeNumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "1";
-			let mustBeANumber = this._mustBeANumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "2";
 
 			let inputText = this._textInput.value;
 			let numbers = /^[0-9]+$/;
@@ -522,12 +520,34 @@
 				}
 			}
 
+			return !mustBeAWholeNumber;
+		}
+
+		/**
+		 * Error validation: handle if the input is not a number, including decimals. Say '[whatever it is] must be a number', 
+		 * for example, 'Hours worked in a week must be a number'. If the input requires a decimal, use a decimal in the example. 
+		 * If the input allows both whole numbers and decimals, use both in the example.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		 private handleIfInputIsNotANumber (fieldIdentifier: string): boolean {
+			
+			let mustBeANumber = this._mustBeANumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "2";
+			
+			let inputText = this._textInput.value;
+			let decimals = /^[.0-9]+$/
+
 			if (mustBeANumber) {
-				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a number");
-				this._errorFocusId = this._textInputId;				
+
+				if (!inputText.match(decimals)) {
+
+					this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a number");
+					this._errorFocusId = this._textInputId;
+				}		
 			}
 
-			return !mustBeANumber || !mustBeAWholeNumber;
+			return !mustBeANumber;
 		}
 
 		/**
