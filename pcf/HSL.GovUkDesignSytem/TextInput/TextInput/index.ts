@@ -303,6 +303,7 @@
 			this.HideError();
 
 			isInputValid &&= this.handleIfInputIsEmpty(fieldIdentifier);
+			isInputValid &&= this.handleIfInputHasBothMinAndMaxLength(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooLong(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooShort(fieldIdentifier);
 
@@ -440,6 +441,57 @@
 			}
 
 			return !isInputTooShort;
+		}
+
+		/**
+		 * Error validation: handle if the input has both a minimum and maximum length. 
+		 * Say '[whatever it is] must be between [number] and [number] characters', for example, 'Last name must be between 2 and 35 characters'.
+		 * If a value for both minimum and maximum length is selected via the Control Manifest this validation method applies.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		 private handleIfInputHasBothMinAndMaxLength (fieldIdentifier: string): boolean {
+
+			this._characterWidth2 = this._context.parameters.fixedAndFluidWidthInputs.raw == "1";
+			this._characterWidth3 = this._context.parameters.fixedAndFluidWidthInputs.raw == "2";
+			this._characterWidth4 = this._context.parameters.fixedAndFluidWidthInputs.raw == "3";
+			this._characterWidth5 = this._context.parameters.fixedAndFluidWidthInputs.raw == "4";
+			this._characterWidth10 = this._context.parameters.fixedAndFluidWidthInputs.raw == "5";
+			this._characterWidth20 = this._context.parameters.fixedAndFluidWidthInputs.raw == "6";
+			this._maxInputLength = (this._context.parameters.maxInputLength.raw == undefined) ? undefined : this._context.parameters.maxInputLength.raw;
+			this._minInputLength = (this._context.parameters.minInputLength.raw == undefined) ? undefined : this._context.parameters.minInputLength.raw;
+
+			// Set the max character length of the input field to fixed character width if selected, for example:
+			// if "2 character width" is chosen, set the max character length to 2, or use the value of the 
+			// "Max input length" setting if one has been defined, otherwise return undefined.
+			let maxInputLengthValue: any = 
+			(
+				(this._characterWidth2) ? 2 : 
+				(this._characterWidth3) ? 3 :
+				(this._characterWidth4) ? 4 :
+				(this._characterWidth5) ? 5 :
+				(this._characterWidth10) ? 10 :
+				(this._characterWidth20) ? 20 :
+				this._maxInputLength
+			);
+
+			let minInputLengthValue: any = this._minInputLength;
+			
+			let inputText = this._textInput.value;
+
+			// If both a maximum and minimum length (either automatically or user entered) have been specified, then check
+			// that the maximum length (either specified automatically or user entered) is greater than the minimum length.
+			// Return false if there is not both a maximum and minimum, or if the maximum is not greater than the minimum, otherwise true.
+			let checkMaxGtMin = (maxInputLengthValue != undefined && minInputLengthValue != undefined) ? ((maxInputLengthValue > minInputLengthValue) ? true : false): false;
+			let isInputBetween = (checkMaxGtMin) ? ((inputText.length > maxInputLengthValue) || (inputText.length < minInputLengthValue)) : false;
+
+			if (isInputBetween) {
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be between " + minInputLengthValue + " and " + maxInputLengthValue + " characters");
+				this._errorFocusId = this._textInputId;
+			}
+
+			return !isInputBetween;
 		}
 
 		/**
@@ -615,23 +667,6 @@
 			}
 		};
 
-		/**
-		 * @param fieldIdentifier {string} Identify name of field to display in error messages
-		 * @returns {boolean} Returns true if nothing is selected. Otherwise false;
-		 * @private
-		 */
-/*		private handleIfNothingIsSelected (fieldIdentifier: string) : boolean {
-			
-			let isOptionSelected = this._selectedOptions.length === 0;
-
-			if (isOptionSelected) {
-				this._enableValidation = true;
-				this.ShowError('Select ' + this.firstCharLowerCase(fieldIdentifier));
-			};
-
-			return !isOptionSelected;
-		}
-*/
 		/**
 		 * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
 		 * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions

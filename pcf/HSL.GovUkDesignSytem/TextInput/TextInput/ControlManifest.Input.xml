@@ -47,7 +47,7 @@
     </property>
  
     <!-- Maximum or minimun input character length -->
-    <property name="maxInputLength" display-name-key="Max input length" description-key="The maximum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="maxInputLength" display-name-key="Max input length" description-key="The maximum length of characters allowed. If a fixed width option is selected for the input field, then that value is used as the maximum length" of-type="SingleLine.Text" usage="input" required="false"/>
     <property name="minInputLength" display-name-key="Min input length" description-key="The minimum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
 
     <!-- Prefix -->
