@@ -53,8 +53,8 @@
 		private _disableSpellcheck: boolean;
 
 		// Configuration for prefix and/or suffix
-		private _prefix: string;
-		private _suffix: string;
+		private _prefix: string | undefined;
+		private _suffix: string | undefined;
 
 		// Configuration for max or min character input length
 		private _maxInputLength: string | undefined;
@@ -518,6 +518,7 @@
 		private handleIfInputIsNotAWholeNumber (fieldIdentifier: string): boolean {
 
 			this._wholeNumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "1";
+			this._prefix = this._context.parameters.prefix.raw = "£";
 
 			if (!this._wholeNumber) {
 				return true;
@@ -529,8 +530,19 @@
 
 			if (mustBeAWholeNumber) {
 
-				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a whole number");
-				this._errorFocusId = this._textInputId;
+				// If a prefix is selected and it's value equals "£", validate input based on guidance from GOVUK Design System:
+				// "If the input is amount of money that must not have decimals". https://design-system.service.gov.uk/components/text-input/
+				// Otherwise, evaluate as per the guidance at the start of this method.
+				if (!this._prefix) {
+
+					this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a whole number");
+					this._errorFocusId = this._textInputId;
+
+				} else {
+
+					this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a whole number and not include pence, like 123 or 156");
+					this._errorFocusId = this._textInputId;
+				}
 			}
 
 			return !mustBeAWholeNumber;
@@ -547,7 +559,8 @@
 		 private handleIfInputIsNotANumber (fieldIdentifier: string): boolean {
 			
 			this._mustBeANumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "2";
-			
+			this._prefix = this._context.parameters.prefix.raw = "£";
+
 			if (!this._mustBeANumber) {
 				return true;
 			}
@@ -558,8 +571,19 @@
 
 			if (mustBeANumber) {
 
-				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a number");
-				this._errorFocusId = this._textInputId;	
+				// If a prefix is selected and it's value equals "£", validate input based on guidance from GOVUK Design System:
+				// "If the input is amount of money that needs decimals". https://design-system.service.gov.uk/components/text-input/
+				// Otherwise, evaluate as per the guidance at the start of this method.
+				if (!this._prefix) {
+				
+					this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a number");
+					this._errorFocusId = this._textInputId;	
+
+				} else {
+
+					this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a number and include pence, like 123.45 or 156.00");
+					this._errorFocusId = this._textInputId;
+				}
 			}
 
 			return !mustBeANumber;
