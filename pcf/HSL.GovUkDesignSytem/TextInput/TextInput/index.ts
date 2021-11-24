@@ -378,6 +378,7 @@
 			let inputIsEmpty = !this._textInput.value
 
 			if (inputIsEmpty) {
+
 				this.ShowError('Enter ' + this.firstCharLowerCase(fieldIdentifier));
 				this._errorFocusId = this._textInputId;
 			}
@@ -496,7 +497,7 @@
 			// that the maximum length (either specified automatically or user entered) is greater than the minimum length.
 			// Return false if there is not both a maximum and minimum, or if the maximum is not greater than the minimum, otherwise true.
 			let checkMaxGtMin = (maxInputLengthValue != undefined && minInputLengthValue != undefined) ? ((maxInputLengthValue > minInputLengthValue) ? true : false): false;
-			let isInputBetween = (checkMaxGtMin) ? ((inputText.length > maxInputLengthValue) || (inputText.length < minInputLengthValue)) : false;
+			let isInputBetween = (checkMaxGtMin) ? (((inputText.length >= maxInputLengthValue) && (inputText.length <= minInputLengthValue)) ? true : false) : false;
 
 			if (isInputBetween) {
 
@@ -516,18 +517,20 @@
 		 */
 		private handleIfInputIsNotAWholeNumber (fieldIdentifier: string): boolean {
 
-			let mustBeAWholeNumber = this._wholeNumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "1";
+			this._wholeNumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "1";
+
+			if (!this._wholeNumber) {
+				return true;
+			}
 
 			let inputText = this._textInput.value;
 			let numbers = /^[0-9]+$/;
+			let mustBeAWholeNumber = !inputText.match(numbers);
 
 			if (mustBeAWholeNumber) {
-				
-				if (!inputText.match(numbers)) {
 
-					this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a whole number");
-					this._errorFocusId = this._textInputId;
-				}
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a whole number");
+				this._errorFocusId = this._textInputId;
 			}
 
 			return !mustBeAWholeNumber;
@@ -543,18 +546,20 @@
 		 */
 		 private handleIfInputIsNotANumber (fieldIdentifier: string): boolean {
 			
-			let mustBeANumber = this._mustBeANumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "2";
+			this._mustBeANumber = (!this._context.parameters.inputType.raw) ? false : this._context.parameters.inputType.raw == "2";
 			
+			if (!this._mustBeANumber) {
+				return true;
+			}
+
 			let inputText = this._textInput.value;
 			let decimals = /^[.0-9]+$/
+			let mustBeANumber = !inputText.match(decimals);
 
 			if (mustBeANumber) {
 
-				if (!inputText.match(decimals)) {
-
-					this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a number");
-					this._errorFocusId = this._textInputId;
-				}		
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be a number");
+				this._errorFocusId = this._textInputId;	
 			}
 
 			return !mustBeANumber;
@@ -569,16 +574,19 @@
 		 */
 		 private handleIfInputMustBeBetweenTwoNumbers (fieldIdentifier: string): boolean {
 			
-			let lowest: any = this._lowest = (this._context.parameters.lowest.raw == undefined) ? undefined : this._context.parameters.lowest.raw;
-			let highest: any = this._highest = (this._context.parameters.highest.raw == undefined) ? undefined : this._context.parameters.highest.raw;
+			this._lowest = (this._context.parameters.lowest.raw == undefined) ? undefined : this._context.parameters.lowest.raw;
+			this._highest = (this._context.parameters.highest.raw == undefined) ? undefined : this._context.parameters.highest.raw;
 			
-			let inputText = this._textInput.value;
+			let lowest: any = this._lowest;
+			let highest: any = this._highest;
+			
+			let inputText: any = this._textInput.value;
 			
 			// Check whether a value has been provided for both the lower and higher bounds, return true otherwise false.
 			let useMustBeBetween = (lowest != undefined && highest != undefined) ? true : false;
 
 			// If a value has been provided for both the lower and higher bounds, then check that input falls between those values.
-			let mustBeBetween = (useMustBeBetween) ? ((inputText >= lowest) || (inputText <= highest)) : false;
+			let mustBeBetween = (useMustBeBetween) ? (((parseFloat(inputText) >= parseFloat(lowest)) && (parseFloat(inputText) <= parseFloat(highest))) ? false : true) : false;
 
 			if (mustBeBetween) {
 
@@ -599,12 +607,17 @@
 		 private handleIfInputIsTooLow (fieldIdentifier: string): boolean {
 
 			this._lowest = (this._context.parameters.lowest.raw == undefined) ? undefined : this._context.parameters.lowest.raw;
+			this._highest = (this._context.parameters.highest.raw == undefined) ? undefined : this._context.parameters.highest.raw;
 			
 			let lowest: any = this._lowest;
+			let highest: any = this._highest;
+
+			// Check whether a value has been provided for both the lower and higher bounds, return true otherwise false.
+			let useMustBeBetween = (lowest != undefined && highest != undefined) ? true : false;
 
 			let inputText = this._textInput.value;
-			let inputIsTooLow = (lowest != undefined) ? (inputText >= lowest) : false;
-
+			let inputIsTooLow = (!useMustBeBetween) ? ((lowest != undefined) ? (parseFloat(inputText) <= parseFloat(lowest)) : true) : false;
+			
 			if (inputIsTooLow) {
 				
 				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be " + lowest + " or more");
@@ -622,11 +635,18 @@
 		 * @private
 		 */
 		 private handleIfInputIsTooHigh (fieldIdentifier: string): boolean {
-
-			let highest = this._highest = (this._context.parameters.highest.raw == undefined) ? undefined : this._context.parameters.highest.raw;
 			
+			this._lowest = (this._context.parameters.lowest.raw == undefined) ? undefined : this._context.parameters.lowest.raw;
+			this._highest = (this._context.parameters.highest.raw == undefined) ? undefined : this._context.parameters.highest.raw;
+			
+			let lowest: any = this._lowest;			
+			let highest: any = this._highest;
+
+			// Check whether a value has been provided for both the lower and higher bounds, return true otherwise false.
+			let useMustBeBetween = (lowest != undefined && highest != undefined) ? true : false;
+
 			let inputText = this._textInput.value;
-			let inputIsTooHigh = (highest != undefined) ? (inputText <= highest) : false;
+			let inputIsTooHigh = (!useMustBeBetween) ? ((highest != undefined) ? (parseFloat(inputText) >= parseFloat(highest)) : true) : false;
 
 			if (inputIsTooHigh) {
 				
