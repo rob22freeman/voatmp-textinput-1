@@ -55,12 +55,18 @@
 
     <!-- Maximum or minimun input character length -->
     <property name="maxInputLength" display-name-key="Max input length" description-key="The maximum length of characters allowed. If a fixed width option is selected for the input field, then that value is used as the maximum length" of-type="SingleLine.Text" usage="input" required="false"/>
-    <property name="minInputLength" display-name-key="Min input length" description-key="The minimum length of characters allowed" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="minInputLength" display-name-key="Min input length" description-key="The minimum length of characters allowed." of-type="SingleLine.Text" usage="input" required="false"/>
     
     <!-- Lowest or highest bounds from number input -->
     <property name="lowest" display-name-key="Lowest" description-key="Specify the lowest bound of the number input." of-type="SingleLine.Text" usage="input" required="false"/>
     <property name="highest" display-name-key="Highest" description-key="Specify the highest bound of the number input." of-type="SingleLine.Text" usage="input" required="false"/>
 
+    <!-- Special characters -->
+    <property name="specialCharacters" display-name-key="Special characters" description-key="Only allow letters a to z, hyphens, spaces and apostrophes, or specify which characters are not allowed." of-type="Enum" usage="input" required="false">
+      <value name="onlyAllowStandardChars" display-name-key="Only allow standard characters" description-key="Only allow letters a to z, hyphens, spaces and apostrophes.">1</value>
+    </property>
+    <property name="specifyCharsNotAllowed" display-name-key="Specify characters not allowed" description-key="Specify characters that are not allowed, separated by commas, for example: !, £, @" of-type="SingleLine.Text" usage="input" required="false"/>
+    
     <!-- Spellcheck -->
     <property name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Sometimes, browsers will spellcheck the information a user puts into a text input. If a user enters something which is recognised as a spelling error, sighted users will see a red line under the word. If you are asking users for information which is not appropriate to spellcheck, like a reference number, name, email address or National Insurance number, disable the spellcheck." of-type="Enum" usage="input" required="false">
       <value name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Disable Spellcheck">1</value>

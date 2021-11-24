@@ -18,6 +18,8 @@ export interface IInputs {
     minInputLength: ComponentFramework.PropertyTypes.StringProperty;
     lowest: ComponentFramework.PropertyTypes.StringProperty;
     highest: ComponentFramework.PropertyTypes.StringProperty;
+    specialCharacters: ComponentFramework.PropertyTypes.EnumProperty<"1">;
+    specifyCharsNotAllowed: ComponentFramework.PropertyTypes.StringProperty;
     disableSpellcheck: ComponentFramework.PropertyTypes.EnumProperty<"1">;
     toggleAutocomplete: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
 }

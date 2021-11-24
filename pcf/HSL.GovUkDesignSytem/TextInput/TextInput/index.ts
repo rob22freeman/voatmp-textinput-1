@@ -64,6 +64,10 @@
 		private _lowest: string | undefined;
 		private _highest: string | undefined;
 
+		// Configuration for special characters not allowed
+		private _onlyAllowStandardChars: boolean;
+		private _specifyCharsNotAllowed: string | undefined;
+
 		// Elements needed for setting up error messages 
 		private _formGroupDiv: HTMLDivElement;
 		private _titleDiv: HTMLLabelElement;
@@ -89,9 +93,6 @@
 		private _errorMessage: string;
 		private _itemId: string;
 		private _containerLabel: string;
-
-		// Error validation methods
-		private _maxInputLengthRequired: boolean;
 
 		/**
 		 * Empty constructor.
@@ -311,6 +312,7 @@
 			isInputValid &&= this.handleIfInputHasBothMinAndMaxLength(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooLong(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooShort(fieldIdentifier);
+			isInputValid &&= this.handleIfCharactersAreNotAllowed(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsNotAWholeNumber(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsNotANumber(fieldIdentifier);
 			isInputValid &&= this.handleIfInputMustBeBetweenTwoNumbers(fieldIdentifier);
@@ -368,7 +370,8 @@
 		}
 
 		/**
-		 * Error validation: handle if input is empty. Say 'Enter [whatever it is]', for example, 'Enter your first name'.
+		 * ERROR VALIDATION: 
+		 * Handle if input is empty. Say 'Enter [whatever it is]', for example, 'Enter your first name'.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
 		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
 		 * @private
@@ -387,7 +390,8 @@
 		}
 
 		/**
-		 * Error validation: handle if the input is too long. Say '[whatever it is] must be [number] characters or fewer', 
+		 * ERROR VALIDATION: 
+		 * Handle if the input is too long. Say '[whatever it is] must be [number] characters or fewer', 
 		 * for example, 'Address line 1 must be 35 characters or fewer'.
 		 * Maximum input length automatically configured in Control Manifest if a fixed width option is selected, otherwise a custom
 		 * value (optional) can be selected.
@@ -432,7 +436,8 @@
 		}
 
 		/**
-		 * Error validation: handle if the input is too short. Say '[whatever it is] must be [number] characters or more', 
+		 * ERROR VALIDATION: 
+		 * Handle if the input is too short. Say '[whatever it is] must be [number] characters or more', 
 		 * for example, 'Full name must be 2 characters or more'.
 		 * Minimum input length not set by default, unless a custom value is selected via the Control Manifest.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
@@ -457,7 +462,8 @@
 		}
 
 		/**
-		 * Error validation: handle if the input has both a minimum and maximum length. 
+		 * ERROR VALIDATION: 
+		 * Handle if the input has both a minimum and maximum length. 
 		 * Say '[whatever it is] must be between [number] and [number] characters', for example, 'Last name must be between 2 and 35 characters'.
 		 * If a value for both minimum and maximum length is selected via the Control Manifest this validation method applies.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
@@ -509,7 +515,39 @@
 		}
 
 		/**
-		 * Error validation: handle if the input is not a whole number. Say '[whatever it is] must be a whole number', 
+		 * ERROR VALIDATION: 
+		 * Handle if the the input uses characters that are not allowed and you know what the characters are, or 
+		 * if the input uses characters that are not allowed from a standard selection. For example, ‘Town or city must not include è and £’, 
+		 * or, ‘Full name must only include letters a to z, hyphens, spaces and apostrophes’.
+		 * Characters allowed can be determined from selections made via the Control Manifest.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		 private handleIfCharactersAreNotAllowed (fieldIdentifier: string): boolean {
+
+			this._onlyAllowStandardChars = (!this._context.parameters.specialCharacters.raw) ? false : this._context.parameters.specialCharacters.raw == "1";
+
+			if (!this._onlyAllowStandardChars) {
+				return true;
+			}
+
+			let inputText = this._textInput.value;
+			let charsAllowed = /^[a-zA-Z-' ]+$/;
+			let mustOnlyIncludeCharsAllowed = !inputText.match(charsAllowed);
+
+			if (mustOnlyIncludeCharsAllowed) {
+
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must only include letters a to z, hyphens, spaces and apostrophes");
+				this._errorFocusId = this._textInputId;
+			}
+
+			return !mustOnlyIncludeCharsAllowed;
+		 }
+
+		/**
+		 * ERROR VALIDATION: 
+		 * Handle if the input is not a whole number. Say '[whatever it is] must be a whole number', 
 		 * for example, 'Hours worked in a week must be a whole number'.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
 		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
@@ -549,7 +587,8 @@
 		}
 
 		/**
-		 * Error validation: handle if the input is not a number, including decimals. Say '[whatever it is] must be a number', 
+		 * ERROR VALIDATION: 
+		 * Handle if the input is not a number, including decimals. Say '[whatever it is] must be a number', 
 		 * for example, 'Hours worked in a week must be a number'. If the input requires a decimal, use a decimal in the example. 
 		 * If the input allows both whole numbers and decimals, use both in the example.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
@@ -590,7 +629,8 @@
 		}
 
 		/**
-		 * Error validation: handle if the input must be between 2 numbers. Say ‘[whatever it is] must be between [lowest] and [highest]’.
+		 * ERROR VALIDATION: 
+		 * Handle if the input must be between 2 numbers. Say ‘[whatever it is] must be between [lowest] and [highest]’.
 		 * For example, ‘Hours worked a week must be between 16 and 99’. Set the lower and higher bounds via the Control Manifest.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
 		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
@@ -622,7 +662,8 @@
 		 }
 
 		/**
-		 * Error validation: handle if the number is too low. Say ‘[whatever it is] must be [lowest] or more’.
+		 * ERROR VALIDATION: 
+		 * Handle if the number is too low. Say ‘[whatever it is] must be [lowest] or more’.
 		 * For example, ‘Hours worked a week must be 16 or more’. Set the lower bound via the Control Manifest.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
 		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
@@ -652,7 +693,8 @@
 		 }
 
 		/**
-		 * Error validation: handle if the number is too high. Say ‘[whatever it is] must be [highest] or fewer'.
+		 * ERROR VALIDATION: 
+		 * Handle if the number is too high. Say ‘[whatever it is] must be [highest] or fewer'.
 		 * For example, ‘Hours worked a week must be 99 or fewer'. Set the upper bound via the Control Manifest.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
 		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
@@ -682,6 +724,7 @@
 		 }
 
 		/**
+		 * COMPONENT CONFIGURATION:
 		 * Following guidance from GOV UK Design System: "if you're asking more than one question on the page, do not set the
 		 * contents of <label> as the page heading." https://design-system.service.gov.uk/components/text-input/
 		 * @param title {string} What information do you intend to capture?
@@ -702,6 +745,7 @@
 		};
 		
 		/**
+		 * COMPONENT CONFIGURATION:
 		 * Configure the size of the text input box based on the selected option for "Fixed and fluid width inputs".
 		 * If no option is selected, the default configuration is "full width", as dictated by the GOVUK Design System:
 		 * "By default, the width of text inputs is fluid and will fit the full width of the container they are placed into." 
@@ -791,6 +835,7 @@
 		};
 
 		/**
+		 * COMPONENT CONFIGURATION:
 		 * If you’re asking the user to enter a whole number and you want to bring up the numeric keypad on a mobile device, 
 		 * set the inputmode attribute to numeric and the pattern attribute to [0-9]*.
 		 * If you’re asking the user to enter a number that might include decimal places, use input type="text" without inputmode or pattern attributes.
@@ -816,6 +861,7 @@
 		};
 
 		/**
+		 * COMPONENT CONFIGURATION:
 		 * Following guidance from the GOVUK Design System, there are occasions where spellcheck should be disabled:
 		 * "If you are asking users for information which is not appropriate to spellcheck, like a reference number, name, email address 
 		 * or National Insurance number, disable the spellcheck."
@@ -834,6 +880,7 @@
 		};
 
 		/**
+		 * COMPONENT CONFIGURATION:
 		 * Use prefixes and suffixes to help users enter things like currencies and measurements.
 		 * https://design-system.service.gov.uk/components/text-input/
 		 * @returns {string} Returns the prefix or suffix entered in the form configuration and renders in the control.
