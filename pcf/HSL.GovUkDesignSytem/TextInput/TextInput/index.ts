@@ -60,6 +60,10 @@
 		private _maxInputLength: string | undefined;
 		private _minInputLength: string | undefined;
 
+		// Configuration for lowest or highest bounds
+		private _lowest: string | undefined;
+		private _highest: string | undefined;
+
 		// Elements needed for setting up error messages 
 		private _formGroupDiv: HTMLDivElement;
 		private _titleDiv: HTMLLabelElement;
@@ -309,6 +313,9 @@
 			isInputValid &&= this.handleIfInputIsTooShort(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsNotAWholeNumber(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsNotANumber(fieldIdentifier);
+			isInputValid &&= this.handleIfInputMustBeBetweenTwoNumbers(fieldIdentifier);
+			isInputValid &&= this.handleIfInputIsTooLow(fieldIdentifier);
+			isInputValid &&= this.handleIfInputIsTooHigh(fieldIdentifier);
 
 			return isInputValid;
 		}
@@ -415,6 +422,7 @@
 			let isInputTooLong = (maxInputLengthValue != undefined) ? (inputText.length > maxInputLengthValue) : false;
 			
 			if (isInputTooLong) {
+
 				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be " + maxInputLengthValue + " characters or fewer");
 				this._errorFocusId = this._textInputId;
 			}
@@ -439,6 +447,7 @@
 			let isInputTooShort = (minInputLengthValue != undefined) ? (inputText.length < parseInt(minInputLengthValue)) : false;
 
 			if (isInputTooShort) {
+
 				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be " + minInputLengthValue + " characters or more");
 				this._errorFocusId = this._textInputId;
 			}
@@ -490,6 +499,7 @@
 			let isInputBetween = (checkMaxGtMin) ? ((inputText.length > maxInputLengthValue) || (inputText.length < minInputLengthValue)) : false;
 
 			if (isInputBetween) {
+
 				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be between " + minInputLengthValue + " and " + maxInputLengthValue + " characters");
 				this._errorFocusId = this._textInputId;
 			}
@@ -549,6 +559,83 @@
 
 			return !mustBeANumber;
 		}
+
+		/**
+		 * Error validation: handle if the input must be between 2 numbers. Say ‘[whatever it is] must be between [lowest] and [highest]’.
+		 * For example, ‘Hours worked a week must be between 16 and 99’. Set the lower and higher bounds via the Control Manifest.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		 private handleIfInputMustBeBetweenTwoNumbers (fieldIdentifier: string): boolean {
+			
+			let lowest: any = this._lowest = (this._context.parameters.lowest.raw == undefined) ? undefined : this._context.parameters.lowest.raw;
+			let highest: any = this._highest = (this._context.parameters.highest.raw == undefined) ? undefined : this._context.parameters.highest.raw;
+			
+			let inputText = this._textInput.value;
+			
+			// Check whether a value has been provided for both the lower and higher bounds, return true otherwise false.
+			let useMustBeBetween = (lowest != undefined && highest != undefined) ? true : false;
+
+			// If a value has been provided for both the lower and higher bounds, then check that input falls between those values.
+			let mustBeBetween = (useMustBeBetween) ? ((inputText >= lowest) || (inputText <= highest)) : false;
+
+			if (mustBeBetween) {
+
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be between " + lowest + " and " + highest);
+				this._errorFocusId = this._textInputId;
+			}
+
+			return !mustBeBetween;
+		 }
+
+		/**
+		 * Error validation: handle if the number is too low. Say ‘[whatever it is] must be [lowest] or more’.
+		 * For example, ‘Hours worked a week must be 16 or more’. Set the lower bound via the Control Manifest.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		 private handleIfInputIsTooLow (fieldIdentifier: string): boolean {
+
+			this._lowest = (this._context.parameters.lowest.raw == undefined) ? undefined : this._context.parameters.lowest.raw;
+			
+			let lowest: any = this._lowest;
+
+			let inputText = this._textInput.value;
+			let inputIsTooLow = (lowest != undefined) ? (inputText >= lowest) : false;
+
+			if (inputIsTooLow) {
+				
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be " + lowest + " or more");
+				this._errorFocusId = this._textInputId;
+			}
+
+			return !inputIsTooLow;
+		 }
+
+		/**
+		 * Error validation: handle if the number is too high. Say ‘[whatever it is] must be [highest] or fewer'.
+		 * For example, ‘Hours worked a week must be 99 or fewer'. Set the upper bound via the Control Manifest.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		 private handleIfInputIsTooHigh (fieldIdentifier: string): boolean {
+
+			let highest = this._highest = (this._context.parameters.highest.raw == undefined) ? undefined : this._context.parameters.highest.raw;
+			
+			let inputText = this._textInput.value;
+			let inputIsTooHigh = (highest != undefined) ? (inputText <= highest) : false;
+
+			if (inputIsTooHigh) {
+				
+				this.ShowError(this.firstCharUpperCase(fieldIdentifier) + " must be " + highest + " or fewer");
+				this._errorFocusId = this._textInputId;
+			}
+
+			return !inputIsTooHigh;
+		 }
 
 		/**
 		 * Following guidance from GOV UK Design System: "if you're asking more than one question on the page, do not set the

@@ -10,14 +10,16 @@ export interface IInputs {
     hint: ComponentFramework.PropertyTypes.StringProperty;
     uniqueIdentifier: ComponentFramework.PropertyTypes.StringProperty;
     disablePageHeading: ComponentFramework.PropertyTypes.EnumProperty<"1">;
-    inputType: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
     fixedAndFluidWidthInputs: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12">;
-    maxInputLength: ComponentFramework.PropertyTypes.StringProperty;
-    minInputLength: ComponentFramework.PropertyTypes.StringProperty;
+    inputType: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
     prefix: ComponentFramework.PropertyTypes.StringProperty;
     suffix: ComponentFramework.PropertyTypes.StringProperty;
-    toggleAutocomplete: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
+    maxInputLength: ComponentFramework.PropertyTypes.StringProperty;
+    minInputLength: ComponentFramework.PropertyTypes.StringProperty;
+    lowest: ComponentFramework.PropertyTypes.StringProperty;
+    highest: ComponentFramework.PropertyTypes.StringProperty;
     disableSpellcheck: ComponentFramework.PropertyTypes.EnumProperty<"1">;
+    toggleAutocomplete: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
 }
 export interface IOutputs {
     textInput?: string;
