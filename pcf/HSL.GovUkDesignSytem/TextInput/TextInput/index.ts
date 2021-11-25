@@ -76,7 +76,6 @@
 		private _formGroupDiv: HTMLDivElement;
 		private _titleDiv: HTMLLabelElement;
 		private _hintDiv: HTMLDivElement;
-		private _textInputDiv: HTMLDivElement;
 		
 		// Text input field
 		private _textInput: HTMLInputElement;
@@ -186,7 +185,6 @@
 			this._formGroupDiv = document.getElementsByClassName("govuk-form-group")[0] as HTMLDivElement;
 			this._titleDiv = document.getElementsByTagName("label")[0] as HTMLLabelElement
 			this._hintDiv = document.getElementById(this._hintId) as HTMLDivElement;
-			this._textInputDiv = document.getElementsByClassName("govuk-input " + this._fixedAndFluidWidthInputsClass)[0] as HTMLDivElement;
 
 			this._textInput = document.getElementById(this._textInputId) as HTMLInputElement;
 			this._textInput.addEventListener("change", this._refreshData);
