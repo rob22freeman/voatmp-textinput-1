@@ -73,10 +73,7 @@
     </property>
 
     <!-- Autocomplete -->
-    <property name="toggleAutocomplete" display-name-key="Toggle autocomplete" description-key="Use the autocomplete attribute on text inputs to help users complete forms more quickly." of-type="Enum" usage="input" required="false">
-      <value name="autocompleteOn" display-name-key="On" description-key="Autocomplete on">1</value>
-      <value name="autocompleteOff" display-name-key="Off" description-key="Autocomplete off">2</value>
-    </property>
+    <property name="autocomplete" display-name-key="Autocomplete" description-key="Use the autocomplete attribute on text inputs to help users complete forms more quickly. Taking guidance from https://www.w3.org/TR/WCAG21/#input-purposes enter a value for autocomplete input purpose." of-type="SingleLine.Text" usage="input" required="false"/>
 
     <!-- 
       Property node's of-type attribute can be of-type-group attribute. 

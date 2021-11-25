@@ -40,10 +40,7 @@
     <property name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Sometimes, browsers will spellcheck the information a user puts into a text input. If a user enters something which is recognised as a spelling error, sighted users will see a red line under the word. If you are asking users for information which is not appropriate to spellcheck, like a reference number, name, email address or National Insurance number, disable the spellcheck." of-type="Enum" usage="input" required="false">
       <value name="disableSpellcheck" display-name-key="Disable spellcheck" description-key="Disable Spellcheck">1</value>
     </property>
-    <property name="toggleAutocomplete" display-name-key="Toggle autocomplete" description-key="Use the autocomplete attribute on text inputs to help users complete forms more quickly." of-type="Enum" usage="input" required="false">
-      <value name="autocompleteOn" display-name-key="On" description-key="Autocomplete on">1</value>
-      <value name="autocompleteOff" display-name-key="Off" description-key="Autocomplete off">2</value>
-    </property>
+    <property name="autocomplete" display-name-key="Autocomplete" description-key="Use the autocomplete attribute on text inputs to help users complete forms more quickly. Taking guidance from https://www.w3.org/TR/WCAG21/#input-purposes enter a value for autocomplete input purpose." of-type="SingleLine.Text" usage="input" required="false"/>
     <resources>
       <code path="bundle.js" order="1"/>
       <css path="govuk-frontend-3.13.0.min.css" order="1"/>

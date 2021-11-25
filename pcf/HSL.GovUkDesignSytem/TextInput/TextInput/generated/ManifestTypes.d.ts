@@ -21,7 +21,7 @@ export interface IInputs {
     specialCharacters: ComponentFramework.PropertyTypes.EnumProperty<"1">;
     specifyCharsNotAllowed: ComponentFramework.PropertyTypes.StringProperty;
     disableSpellcheck: ComponentFramework.PropertyTypes.EnumProperty<"1">;
-    toggleAutocomplete: ComponentFramework.PropertyTypes.EnumProperty<"1" | "2">;
+    autocomplete: ComponentFramework.PropertyTypes.StringProperty;
 }
 export interface IOutputs {
     textInput?: string;

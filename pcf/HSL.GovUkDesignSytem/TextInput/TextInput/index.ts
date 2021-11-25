@@ -52,6 +52,10 @@
 		private _spellcheck: boolean;
 		private _disableSpellcheck: boolean;
 
+		// Configuration for autocomplete
+		private _autocomplete: string | undefined;
+		private _autocompleteEnabled: string | undefined;
+
 		// Configuration for prefix and/or suffix
 		private _prefix: string | undefined;
 		private _suffix: string | undefined;
@@ -140,6 +144,7 @@
 			this.inputType();
 			this.prefixSuffix();
 			this._spellcheck = this.disableSpellcheck();
+			this.autocomplete();
 
 			//Configure and render Nunjucks templates
 			require('govuk-frontend');
@@ -164,7 +169,8 @@
 				  name: this._uniqueIdentifier,
 				  inputmode: this._inputmode,
 				  pattern: this._pattern,
-				  spellcheck: this._spellcheck
+				  spellcheck: this._spellcheck,
+				  autocomplete: this._autocomplete
 				} });
 			
 			this._container = document.createElement("div");
@@ -806,10 +812,12 @@
 			this._disablePageHeadingIsTrue = this._context.parameters.disablePageHeading.raw =="1";
 
 			if (!this._disablePageHeadingIsTrue) {
+
 				this._disablePageHeading = {text: this._title, classes: "govuk-label--l", isPageHeading: true};
 			} 
 			
 			else {
+
 				this._disablePageHeading = {text: this._title};
 			}	
 		};
@@ -919,12 +927,14 @@
 			this._wholeNumber = this._context.parameters.inputType.raw == "1";
 
 			if (this._wholeNumber) {
+
 				this._inputmode = "numeric", 
 				this._pattern = "[0-9]*"
 			}
 
 			// Set the default values to "", unless the whole number option is selected in the configuration			
 			else {
+
 				this._inputmode = "";
 				this._pattern = "";
 			}
@@ -943,8 +953,10 @@
 			this._disableSpellcheck = this._context.parameters.disableSpellcheck.raw == "1";
 
 			if (this._disableSpellcheck) {
+
 				return false;
 			} else {
+
 				return true;
 			}
 		};
@@ -962,13 +974,34 @@
 
 			// prefix
 			if (this._prefix !== undefined) {
+
 				return this._prefix;
 			}
 
 			// suffix
 			if (this._suffix !== undefined) {
+
 				return this._suffix;
 			}
+		};
+
+		/**
+		 * COMPONENT CONFIGURATION:
+		 * Following guidance from GOV UK Design System: "Use the autocomplete attribute on text inputs to help users complete forms more quickly. 
+		 * This lets you specify an input’s purpose so browsers can autofill the information on a user’s behalf if they’ve entered it previously.
+		 * For example, to enable autofill on a postcode field, set the autocomplete attribute to postal-code. https://design-system.service.gov.uk/components/text-input/
+		 * See guidance on input purposes: https://www.w3.org/TR/WCAG21/#input-purposes 
+		 * @returns {any} Adds autocomplete attribute to control render true.
+		 * @private
+		 */
+		 private autocomplete () {
+
+			this._autocompleteEnabled = (this._context.parameters.autocomplete.raw == undefined) ? undefined : this._context.parameters.autocomplete.raw;
+
+			if (this._autocompleteEnabled != undefined) {
+
+				return this._autocomplete = this._context.parameters.autocomplete.raw as any;
+			} 
 		};
 
 		/**
@@ -982,6 +1015,7 @@
 	  	this._context = context;
 			
 			if (this._value) {
+
 				this._textInput.value = this._value;
 
 				// Field has been set, start validation following any changes
@@ -997,6 +1031,7 @@
 
 			// Send the currently selected options back to the ComponentFramework
 			return {
+
 				textInput: (this._value === null ? undefined : this._value)
 			};
 		}
