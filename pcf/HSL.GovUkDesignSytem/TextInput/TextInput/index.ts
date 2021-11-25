@@ -312,7 +312,8 @@
 			isInputValid &&= this.handleIfInputHasBothMinAndMaxLength(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooLong(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsTooShort(fieldIdentifier);
-			isInputValid &&= this.handleIfCharactersAreNotAllowed(fieldIdentifier);
+			isInputValid &&= this.handleIfSpecifiedCharactersAreNotAllowed(fieldIdentifier);
+			isInputValid &&= this.handleIfOnlyStandardCharactersAreAllowed(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsNotAWholeNumber(fieldIdentifier);
 			isInputValid &&= this.handleIfInputIsNotANumber(fieldIdentifier);
 			isInputValid &&= this.handleIfInputMustBeBetweenTwoNumbers(fieldIdentifier);
@@ -423,8 +424,12 @@
 				this._maxInputLength
 			);
 
+			if (!maxInputLengthValue) {
+				return true;
+			}
+
 			let inputText = this._textInput.value; 
-			let isInputTooLong = (maxInputLengthValue != undefined) ? (inputText.length > maxInputLengthValue) : false;
+			let isInputTooLong = (maxInputLengthValue != undefined) ? (inputText.length > maxInputLengthValue ? true : false) : false;
 			
 			if (isInputTooLong) {
 
@@ -447,10 +452,14 @@
 		private handleIfInputIsTooShort (fieldIdentifier: string): boolean {
 
 			this._minInputLength = (this._context.parameters.minInputLength.raw == undefined) ? undefined : this._context.parameters.minInputLength.raw;
-			let minInputLengthValue = this._minInputLength;
-			
+			let minInputLengthValue = this._minInputLength;	
+
+			if (minInputLengthValue == undefined) {
+				return true;
+			}
+
 			let inputText = this._textInput.value;
-			let isInputTooShort = (minInputLengthValue != undefined) ? (inputText.length < parseInt(minInputLengthValue)) : false;
+			let isInputTooShort = (minInputLengthValue != undefined) ? (inputText.length < parseInt(minInputLengthValue) ? true : false) : false;
 
 			if (isInputTooShort) {
 
@@ -516,25 +525,78 @@
 
 		/**
 		 * ERROR VALIDATION: 
-		 * Handle if the the input uses characters that are not allowed and you know what the characters are, or 
-		 * if the input uses characters that are not allowed from a standard selection. For example, ‘Town or city must not include è and £’, 
-		 * or, ‘Full name must only include letters a to z, hyphens, spaces and apostrophes’.
-		 * Characters allowed can be determined from selections made via the Control Manifest.
+		 * Handle if the the input uses characters that are not allowed and you know what the characters are, For example, 
+		 * ‘Town or city must not include è and £’. Characters allowed can be determined from selections made via the Control Manifest.
 		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
 		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
 		 * @private
 		 */
-		 private handleIfCharactersAreNotAllowed (fieldIdentifier: string): boolean {
+		 private handleIfSpecifiedCharactersAreNotAllowed (fieldIdentifier: string): boolean {
 
 			this._onlyAllowStandardChars = (!this._context.parameters.specialCharacters.raw) ? false : this._context.parameters.specialCharacters.raw == "1";
+			this._specifyCharsNotAllowed = (this._context.parameters.specifyCharsNotAllowed.raw == undefined) ? undefined : this._context.parameters.specifyCharsNotAllowed.raw;
 
-			if (!this._onlyAllowStandardChars) {
+			// Check onlyAllowStandardChars is not selected and specifyCharsNotAllowed is undefined and if neither have been entered,
+			// then return false. If this statement returns true, then check whether a value has been entered for specifyCharsNotAllowed.
+			// If that is the case, then default to validating the input based on those criteria, otherwise return true and enable this method.
+			let charValidationRqrd = (!this._onlyAllowStandardChars && this._specifyCharsNotAllowed == undefined) ? false : (this._specifyCharsNotAllowed != undefined) ? true : false;
+
+			if (!charValidationRqrd) {
+				return true;
+			}
+
+			let specifyCharsNotAllowedRgx: any = this._specifyCharsNotAllowed?.replace(", ", "");
+
+			const charsNotAllowed = new RegExp(`[${specifyCharsNotAllowedRgx}]`);
+
+			let inputText = this._textInput.value;
+			const mustOnlyIncludeCharsAllowed = inputText.match(charsNotAllowed) ? true : false;
+
+			let specifyCharsNotAllowed: any = this._specifyCharsNotAllowed;
+
+			if (mustOnlyIncludeCharsAllowed) {
+
+				let errorMessage = this.firstCharUpperCase(fieldIdentifier) + " must not include ";
+				let errorFieldDescriptors: string[] = [];
+					errorFieldDescriptors.push(specifyCharsNotAllowed);
+				
+					errorMessage += errorFieldDescriptors.join(', ')
+
+				let lastIndexOfCommaSpace = errorMessage.lastIndexOf(', ')
+				errorMessage = errorMessage.slice(0, lastIndexOfCommaSpace) + errorMessage.slice(lastIndexOfCommaSpace).replace(', ', ' or ');
+				
+				this.ShowError(errorMessage);
+				this._errorFocusId = this._textInputId;
+			}
+			
+			return !mustOnlyIncludeCharsAllowed;
+		}
+
+		/**
+		 * ERROR VALIDATION: 
+		 * Handle if the the input uses characters that are not allowed from a standard selection. For example, 
+		 * ‘Full name must only include letters a to z, hyphens, spaces and apostrophes’.
+		 * @param fieldIdentifier {string} Indentify the name of the field to display in the error messages
+		 * @returns {boolean} Return true if nothing has been entered, otherwise false;
+		 * @private
+		 */
+		 private handleIfOnlyStandardCharactersAreAllowed (fieldIdentifier: string): boolean {
+
+			this._onlyAllowStandardChars = (!this._context.parameters.specialCharacters.raw) ? false : this._context.parameters.specialCharacters.raw == "1";
+			this._specifyCharsNotAllowed = (this._context.parameters.specifyCharsNotAllowed.raw == undefined) ? undefined : this._context.parameters.specifyCharsNotAllowed.raw;
+
+			// Check onlyAllowStandardChars is not selected and specifyCharsNotAllowed is undefined and if neither have been entered,
+			// then return false. If this statement returns true, then check whether a value has been entered for specifyCharsNotAllowed.
+			// If that is the case, then default to validating the input based on those criteria, otherwise return true and enable this method.
+			let charValidationRqrd = (!this._onlyAllowStandardChars && this._specifyCharsNotAllowed == undefined) ? false : (this._specifyCharsNotAllowed != undefined) ? false : true;
+
+			if (!charValidationRqrd) {
 				return true;
 			}
 
 			let inputText = this._textInput.value;
-			let charsAllowed = /^[a-zA-Z-' ]+$/;
-			let mustOnlyIncludeCharsAllowed = !inputText.match(charsAllowed);
+			const charsAllowed = /^[a-zA-Z-' ]+$/;
+			const mustOnlyIncludeCharsAllowed = !inputText.match(charsAllowed);
 
 			if (mustOnlyIncludeCharsAllowed) {
 
@@ -563,8 +625,8 @@
 			}
 
 			let inputText = this._textInput.value;
-			let numbers = /^[0-9]+$/;
-			let mustBeAWholeNumber = !inputText.match(numbers);
+			const numbers = /^[0-9]+$/;
+			const mustBeAWholeNumber = !inputText.match(numbers);
 
 			if (mustBeAWholeNumber) {
 
@@ -605,8 +667,8 @@
 			}
 
 			let inputText = this._textInput.value;
-			let decimals = /^[.0-9]+$/
-			let mustBeANumber = !inputText.match(decimals);
+			const decimals = /^[.0-9]+$/
+			const mustBeANumber = !inputText.match(decimals);
 
 			if (mustBeANumber) {
 
@@ -679,6 +741,10 @@
 
 			// Check whether a value has been provided for both the lower and higher bounds, return true otherwise false.
 			let useMustBeBetween = (lowest != undefined && highest != undefined) ? true : false;
+			
+			if (!useMustBeBetween) {
+				return true;
+			}
 
 			let inputText = this._textInput.value;
 			let inputIsTooLow = (!useMustBeBetween) ? ((lowest != undefined) ? (parseFloat(inputText) <= parseFloat(lowest)) : true) : false;
@@ -710,6 +776,10 @@
 
 			// Check whether a value has been provided for both the lower and higher bounds, return true otherwise false.
 			let useMustBeBetween = (lowest != undefined && highest != undefined) ? true : false;
+			
+			if (!useMustBeBetween) {
+				return true;
+			}
 
 			let inputText = this._textInput.value;
 			let inputIsTooHigh = (!useMustBeBetween) ? ((highest != undefined) ? (parseFloat(inputText) >= parseFloat(highest)) : true) : false;
